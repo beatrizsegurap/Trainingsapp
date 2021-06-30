@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 #ifndef _list_h
@@ -11,8 +12,6 @@ typedef List Cola;
 /* list operations */
 
 List* createList();
-
-void clean(List* list);
 
 int is_empty(List* list);
 
@@ -44,20 +43,22 @@ int get_size();
 /* stack operations */
 Stack* createStack();
 
-void pop(Stack* s);
+void popStack(Stack* s);
 
-void* top(Stack* s);
+void* topStack(Stack* s);
 
-void push(Stack* s, void* data);
+void pushStack(Stack* s, void* data);
 
 /* cola operations */
 Cola* createCola();
 
-void pop(Cola* c);
+void popCola(Cola* c);
 
-void push(Cola* c, void* data);
+void pushCola(Cola* c, void* data);
 
+void clean(List * list);
 
+bool vacio(List * list);
 
 
 #endif /* _list_h */

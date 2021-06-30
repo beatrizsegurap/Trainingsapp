@@ -167,7 +167,7 @@ void CalcularIMC(Stack *HistorialI){
     printf("------------------------------------------------------\n");
     printf("         Su IMC actual es: %f\n",*IMC);
     printf("------------------------------------------------------\n");
-    push(HistorialI,IMC);
+    pushStack(HistorialI,IMC);
 }
 void HistorialIMC(Stack *HistorialI)
 {
@@ -180,16 +180,16 @@ void HistorialIMC(Stack *HistorialI)
     
     while (get_size(HistorialI)!=0)
     {
-        i= *((float*)top(HistorialI)); 
-        push(s2,top(HistorialI));
-        pop(HistorialI);
+        i= *((float*)topStack(HistorialI)); 
+        pushStack(s2,topStack(HistorialI));
+        popStack(HistorialI);
         printf("IMC : %f\n",i);
     }
     //printf("------------------------------------------------------\n");
     while (get_size(s2)!=0)
     {
-        push(HistorialI,top(s2));
-        pop(s2);
+        pushStack(HistorialI,topStack(s2));
+        popStack(s2);
     }
 }
 void desempenoEntrenamiento (Stack *s)

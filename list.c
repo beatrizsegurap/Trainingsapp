@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <assert.h>
 #include "list.h"
 
@@ -22,11 +23,6 @@ struct List{
 */
 int get_size(List* list){
     return list->size;
-}
-
-void clean(List* list){
-    while(is_empty(list)==0)
-        pop(list);
 }
 
 List* createList(){
@@ -132,12 +128,12 @@ void popCurrent(List* list){
 }
 
 
-void pop(Stack* s){
+void popStack(Stack* s){
   popBack(s);
 }
 
 
-void pop(Cola* c){
+void popCola(Cola* c){
   popFront(c);
 }
 
@@ -174,7 +170,7 @@ void* last(List* list){
     else return NULL;
 }
 
-void* top(Stack* s){
+void* topStack(Stack* s){
   return last(s);
 }
 
@@ -186,12 +182,25 @@ void* prev(List* list){
     else return NULL;
 }
 
-
-
-void push(Stack* s, void* data){
+void pushStack(Stack* s, void* data){
   pushBack(s,data);
 }
 
-void push(Cola* c, void* data){
+void pushCola(Cola* c, void* data){
   pushBack(c,data);
+}
+
+void clean(List * list) {
+    assert(list != NULL);
+    
+    while (list->first != NULL) {
+        popFront(list);
+    }
+}
+
+bool vacio(List * list){
+  if(!list->first){
+    return true;
+  }
+  return false;
 }
