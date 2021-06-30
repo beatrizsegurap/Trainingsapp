@@ -25,7 +25,6 @@ struct List{
   Node * tail;
 };
 
-typedef struct Stack Stack;
 
 /*
   private function declarations
@@ -47,7 +46,11 @@ List * createList() {
      return new;
 }
 
-Stack * createStack(){
+List * createStack(){
+    return createList();
+}
+
+List * createCola(){
     return createList();
 }
 
@@ -162,12 +165,24 @@ void cleanList(List * list) {
     }
 }
 
-void pop_stack(Stack* s){
+void pop_stack(List* s){
   popBack(s);
 }
 
-void* top_stack(Stack* s){
+void* top_stack(List* s){
   return lastList(s);
+}
+
+void push_stack(List* s, void* data){
+    pushBack(s,data);
+}
+
+void pop_cola(List* c){
+    popFront(c);
+}
+
+void push_cola(List* c, void* data){
+    pushBack(c,data);
 }
 
 bool vacio(List * list){

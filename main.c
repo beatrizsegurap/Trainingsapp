@@ -6,26 +6,28 @@
 #include "hashmap.h"
 #include "list.h"
 
+
+//----------------------Estructuras----------------------
 typedef struct{
-    char nombre[100];
+    char nombre;
     void* ejercicios;
     long calorias;
     long id;
-    long tiempo;
+    int tiempo;
 }Rutina;
 
 typedef struct{
     char nombre[50];
     char tipo[20];
-    void* dificultad;
+    List* dificultades;
 }Ejercicio;
 
 typedef struct{
     char nivel[12];
-    char descripcion[300];
-    long tiempo;
+    char descripcion[2000];
+    int tiempo;
+    int series;
     int repeticiones;
-    long caloriasQuemadas;
 }Dificultad;
 
 typedef struct{
@@ -36,14 +38,134 @@ typedef struct{
     long calorias;
 }Comida;
 
+//-------------------------------------------------------
+
+Ejercicio* createEjercicio(char *nombre, char* tipo){
+    Ejercicio* e = (Ejercicio*) malloc(sizeof(Ejercicio));
+    strcpy(e->nombre,nombre);
+    strcpy(e->tipo,tipo);
+    return e;
+}
+
+Dificultad* createDificultad(char * nivel,char* descripcion,int tiempo, int series,int repeticiones){
+    Dificultad *d = (Dificultad*)malloc(sizeof(Dificultad));
+    strcpy(d->nivel,nivel);
+    strcpy(d->descripcion,descripcion);
+    d->tiempo=tiempo;
+    d->series=series;
+    d->repeticiones=repeticiones;
+    return d;
+}
+
+//Funcion para leer el k-esimo elemento de un string (separado por comas) nos ayuda para cargar el archivo
+char*get_csv_field (char * tmp, int k){
+    int open_mark = 0;
+    char* ret=(char*) malloc(2000*sizeof(char));
+    int ini_i=0, i=0;
+    int j=0;
+    while(tmp[i+1]!='\0'){
+        if(tmp[i]== '\"'){
+            open_mark = 1-open_mark;
+            if(open_mark) ini_i = i+1;
+            i++;
+            continue;
+        }
+        if(open_mark || tmp[i]!= ';'){
+            if(k==j) ret[i-ini_i] = tmp[i];
+            i++;
+            continue;
+        }
+        if(tmp[i]== ';'){
+            if(k==j) {
+               ret[i-ini_i] = 0;
+               return ret;
+            }
+            j++; ini_i = i+1;
+        }
+        i++;
+    }
+    if(k==j) {
+       ret[i-ini_i] = 0;
+       return ret;
+    }
+    return NULL;
+}
+
+//Conversor de char a int
+int conversorInt(char * cadena){
+    int i=cadena[0]-'0';
+    if(cadena[1]-'0'>=0){
+        i=i*10;
+        i+=cadena[1]-'0';
+    }
+    return i;
+}
+
+//Funcion que carga ejercicios a partir de archivo .csv
+void Cargar(HashMap * mapEjercicios, HashMap * mapTipos){
+    //Abrimos el archivo con los ejercicios separados por ;
+    FILE *file;
+    file = fopen ("Ejercicios.csv", "r" ); 
+    if(!file)return;
+
+    // Cadena para guardar la linea completa del archivo csv
+    char linea[3000];
+    //Obtenemos la primera linea del archivo sin datos y copiamos en el nuevo 
+    fgets (linea, 1023, file);
+
+    while (fgets (linea, 2999, file) != NULL){
+        char *nombre,*tipo,*descripcion,*dificultad;
+        int series,repeticiones,tiempo;
+        for(int i=0;i<7;i++){
+                char *aux = get_csv_field(linea, i); 
+                if(i==0)nombre=aux;
+                if(i==1)tipo=aux;
+                if(i==2)dificultad=aux;
+                if(i==3)tiempo=conversorInt(aux);
+                if(i==4)repeticiones=conversorInt(aux);
+                if(i==5)series=conversorInt(aux);
+                if(i==6)descripcion=aux;
+        } 
+        Ejercicio *Ejercicio = searchMap(mapEjercicios,nombre);
+        List *Tipo = searchMap(mapTipos,tipo);
+        if(!Ejercicio){
+            Ejercicio = createEjercicio(nombre,tipo);
+            List * dificultades = createList();
+            Dificultad* d = createDificultad(dificultad,descripcion,tiempo,series,repeticiones);
+            pushBack(dificultades,d);
+            Ejercicio->dificultades=dificultades;
+            insertMap(mapEjercicios,nombre,Ejercicio);
+        }
+        else{
+            Dificultad* d = createDificultad(dificultad,descripcion,tiempo,series,repeticiones);
+            pushBack(Ejercicio->dificultades,d);
+        }
+
+        if(!Tipo){
+            Tipo = createList();
+            pushBack(Tipo,Ejercicio);
+            insertMap(mapTipos,tipo,Tipo);
+        }
+        else{
+            pushBack(Tipo,Ejercicio);
+        }
+    }
+    fclose(file);
+}
 
 int main(){
     HashMap* Ejercicios=createMap(100);
-
+    HashMap* Tipos=createMap(10);
+    int masaCorporal = 0;
     int caso=2;
+    Cargar(Ejercicios,Tipos);
     printf("-----------------------------------------------------------------------\n");
     printf("                            TRAININGSAPP                             \n");
     printf("-----------------------------------------------------------------------\n");
+    printf("¡Hola! te damos la bienvenida a TrainingsApp una aplicacion que te ayudara a mantener tu entrenamiento al dia\n");
+    printf("Por favor ingresa tu peso en kg sin decimales:\n");
+    scanf("%d",&masaCorporal);
+    printf("%d\n",masaCorporal);
     while(caso!=0)
     {
         printf(" 1. Crear rutina\n");
@@ -53,7 +175,7 @@ int main(){
         printf(" 5. Calorias quemadas\n");
         printf(" 6. Balance de calorias\n");
         printf(" 7. Comidas \n");
-        printf(" 8. Desempeño de entrenamiento diario\n");
+        printf(" 8. Desempenno de entrenamiento diario\n");
         printf(" 0. Salir\n");
         scanf("%d", &caso);
 

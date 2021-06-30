@@ -6,6 +6,10 @@ typedef struct List List;
 
 List * createList(void);
 
+List * createStack();
+
+List * createCola();
+
 void * firstList(List * list);
 
 void * nextList(List * list);
@@ -27,6 +31,16 @@ void * popBack(List * list);
 void * popCurrent(List * list);
 
 void cleanList(List * list);
+
+void pop_stack(List* s);
+
+void* top_stack(List* s);
+
+void push_stack(List* s, void* data);
+
+void pop_cola(List* c);
+
+void push_cola(List* c,void* data);
 
 bool vacio(List * list);
 
