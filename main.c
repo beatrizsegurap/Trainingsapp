@@ -153,12 +153,13 @@ void Cargar(HashMap * mapEjercicios, HashMap * mapTipos){
     fclose(file);
 }
 
+//Calcula el IMC del usuario
 void CalcularIMC(Stack *HistorialI){
 
     float p;
     float h;
     printf("Antes de comenzar\nPor favor ingrese\n");
-    printf("Su Peso: ");
+    printf("Su masa corporal: ");
     scanf("%f",&p);
     printf("Su Altura: ");
     scanf("%f",&h);
@@ -169,6 +170,8 @@ void CalcularIMC(Stack *HistorialI){
     printf("------------------------------------------------------\n");
     pushStack(HistorialI,IMC);
 }
+
+//Muestra el historial del IMC del usuario
 void HistorialIMC(Stack *HistorialI)
 {
     printf("------------------------------------------------------\n");
@@ -192,6 +195,8 @@ void HistorialIMC(Stack *HistorialI)
         popStack(s2);
     }
 }
+
+//Muestra el tiempo total invertido en la aplicacion y da posibilidad de mostrar el Historial de IMC
 void desempenoEntrenamiento (Stack *s)
 {
     int caso=3;
@@ -214,23 +219,86 @@ void realizaRutina(Stack *stackIMC)
     CalcularIMC(stackIMC);
 }
 
+//Muestra todos los ejercicios disponibles, ordenados por tipo
+void mostrarEjercicios(HashMap *mapTipo)
+{
+    int cont =0;
+    printf("-----------------------------------------------------------------------\n");
+    printf("                    MOSTRAR TODOS LOS EJERCICIOS       \n");
+    printf("-----------------------------------------------------------------------\n");
+    List *aux = firstMap(mapTipo);
+    while (aux)
+    {
+        //printf(" NOMBRE     TIPO    NIVEL      REPETICIONES     SERIES    TIEMPO\n");
+        Ejercicio *eje = first(aux);
+        while (eje)
+        {
+            printf("Nombre: %s\n",eje->nombre);
+            printf("Tipo: %s\n",eje->tipo);
+            Dificultad *d = first(eje->dificultades);
+            //while (d)
+            if(d)
+            {
+                printf("Nivel: %s\n",d->nivel);
+                printf("Repeticiones: %d\n",d->repeticiones);
+                printf("Series: %d\n",d->series);
+                printf("Tiempo: %d\n",d->tiempo);
+                printf("-----------------------------------------------------------------------\n");
+                printf("Descripcion: %s\n",d->descripcion);
+                printf("-----------------------------------------------------------------------\n");
+                //d = next(eje->dificultades);
+            }
+            cont++;
+            eje = next(aux);
+        }
+        aux = nextMap(mapTipo);
+    }
+   // printf("CONTADOR = %d",cont); 
+}
+
+//Muestra el Historial de rutinas realizadas por el usuario
+void HistorialRutinas(Stack *s)
+{
+    printf("------------------------------------------------------\n");
+    if(get_size(s)==0) printf("            NO HA REALIZADO RUTINAS\n");
+    if(get_size(s)!=0)printf("             Sus Rutinas realizadas son\n");
+    printf("------------------------------------------------------\n");
+    char i[50];
+    Stack *s2 = createStack();
+    
+    while (get_size(s)!=0)
+    {
+        strcpy(i,topStack(s)); 
+        pushStack(s2,topStack(s));
+        popStack(s);
+        printf("Nombre Rutina : %s\n",i);
+    }
+    //printf("------------------------------------------------------\n");
+    while (get_size(s2)!=0)
+    {
+        pushStack(s,topStack(s2));
+        popStack(s2);
+    }
+}
 
 int main(){
     HashMap* Ejercicios=createMap(100);
     HashMap* Tipos=createMap(10);
     int masaCorporal = 0;
     Stack *stackIMC = createStack();
-
+    Stack *stackH = createStack();
+    
     int caso=2;
     Cargar(Ejercicios,Tipos);
     printf("-----------------------------------------------------------------------\n");
     printf("                            TRAININGSAPP                             \n");
     printf("-----------------------------------------------------------------------\n");
-    printf("¡Hola! te damos la bienvenida a TrainingsApp una aplicacion que te ayudara a mantener tu entrenamiento al dia\n");
+    printf("Hola, te damos la bienvenida a TrainingsApp una aplicacion que te ayudara a mantener tu entrenamiento al dia\n");
     printf("Por favor ingresa tu peso en kg sin decimales:\n");
     scanf("%d",&masaCorporal);
-    printf("%d\n",masaCorporal);
+    //printf("%d\n",masaCorporal);
     //CalcularIMC(stackIMC);
+    printf("-----------------------------------------------------------------------\n");
     while(caso!=0)
     {
         printf(" 1. Crear rutina\n");
@@ -248,8 +316,8 @@ int main(){
         {
             case 1:break;
             case 2:realizaRutina(stackIMC);break;
-            case 3:break;
-            case 4:break;
+            case 3:mostrarEjercicios(Tipos);break;
+            case 4:HistorialRutinas(stackH);
             case 5:break;
             case 6:break;
             case 7:break;
