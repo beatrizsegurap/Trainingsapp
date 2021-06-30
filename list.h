@@ -1,49 +1,63 @@
-#ifndef List_h
-#define List_h
+#include <stdlib.h>
+#include <stdio.h>
 
-typedef struct Node Node;
+#ifndef _list_h
+#define _list_h
+
 typedef struct List List;
+typedef List Stack;
+typedef List Cola;
 
-List * createList(void);
+/* list operations */
 
-List * createStack();
+List* createList();
 
-List * createCola();
+void clean(List* list);
 
-void * firstList(List * list);
+int is_empty(List* list);
 
-void * nextList(List * list);
+void* front(List* list);
 
-void * lastList(List * list);
+void* first(List* list);
 
-void * prevList(List * list);
+void* next(List* list);
 
-void pushFront(List * list, void * data);
+void* last(List* list);
 
-void pushBack(List * list, void * data);
+void* prev(List* list);
 
-void pushCurrent(List * list, void * data);
+void popFront(List* list);
 
-void * popFront(List * list);
+void popBack(List* list);
 
-void * popBack(List * list);
+void pushFront(List* list, void* data);
 
-void * popCurrent(List * list);
+void pushBack(List* list, void* data);
 
-void cleanList(List * list);
+void pushCurrent(List* list, void* data);
 
-void pop_stack(List* s);
+void popCurrent(List* list);
 
-void* top_stack(List* s);
+int get_size();
 
-void push_stack(List* s, void* data);
 
-void pop_cola(List* c);
+/* stack operations */
+Stack* createStack();
 
-void push_cola(List* c,void* data);
+void pop(Stack* s);
 
-bool vacio(List * list);
+void* top(Stack* s);
 
-int size(List * list);
+void push(Stack* s, void* data);
 
-#endif /* List_h */
+/* cola operations */
+Cola* createCola();
+
+void pop(Cola* c);
+
+void push(Cola* c, void* data);
+
+
+
+
+#endif /* _list_h */
