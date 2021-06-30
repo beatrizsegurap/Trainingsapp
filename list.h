@@ -1,35 +1,38 @@
-#ifndef List_h
-#define List_h
+#include <stdlib.h>
+#include <stdio.h>
 
-typedef struct Node Node;
+#ifndef _list_h
+#define _list_h
+
 typedef struct List List;
+typedef List Stack;
 
-List * createList(void);
+/* list operations */
 
-void * firstList(List * list);
+List* createList();
+void clean(List* list);
+int is_empty(List* list);
+void* front(List* list);
+void* first(List* list);
+void* next(List* list);
+void* last(List* list);
+void* prev(List* list);
+void popFront(List* list);
+void popBack(List* list);
+void pushFront(List* list, void* data);
+void pushBack(List* list, void* data);
+void pushCurrent(List* list, void* data);
+void popCurrent(List* list);
+int get_size();
 
-void * nextList(List * list);
 
-void * lastList(List * list);
+/* stack operations */
+Stack* createStack();
+void pop(Stack* s);
+void* top(Stack* s);
+void push(Stack* s, void* data);
 
-void * prevList(List * list);
 
-void pushFront(List * list, void * data);
 
-void pushBack(List * list, void * data);
 
-void pushCurrent(List * list, void * data);
-
-void * popFront(List * list);
-
-void * popBack(List * list);
-
-void * popCurrent(List * list);
-
-void cleanList(List * list);
-
-bool vacio(List * list);
-
-int size(List * list);
-
-#endif /* List_h */
+#endif /* _list_h */
