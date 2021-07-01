@@ -227,9 +227,17 @@ void desempenoEntrenamiento (Stack *s)
         printf("------------------------------------------------------\n");
     }
 }
-void realizaRutina(Stack *stackIMC)
+void realizaRutina(Stack *stackIMC, Stack *stackH, List *rutinas)
 {
+   // int cont =1, i,op;
     CalcularIMC(stackIMC);
+    /*Rutina *r = first(rutinas);
+    while (r)
+    {
+        printf("%d.- %s",cont,r->nombre);
+        cont++;
+        r = next(rutinas);
+    }*/
 }
 
 //Muestra todos los ejercicios disponibles, ordenados por tipo
@@ -375,6 +383,31 @@ void borrarRutina(List *Rutinas){
     }
 }
 
+void detalleRutina(Rutina *r)
+{
+    int cont=0;
+    //Rutina *r = first(Ruti);
+    printf("-----------------------------------------------------------------------\n");
+    printf("DETALLES DE LA RUTINA\n");
+    printf("-----------------------------------------------------------------------\n");
+    printf("Id: %d\n",r->id);
+    printf("Nombre: %s\n",r->nombre);
+    printf("Tiempo: %d\n",r->tiempo);
+    printf("Calorias: %ld\n",r->calorias);
+    Ejercicio *eje = first(r->ejercicios);
+    printf("-----------------------------------------------------------------------\n");
+    printf("EJERCICIOS\n");
+    printf("-----------------------------------------------------------------------\n");
+    while (eje)
+    {
+        printf("Nombre: %s\n",eje->nombre);
+        printf("Tipo: %s\n",eje->tipo);
+        printf("-----------------------------------------------------------------------\n");
+        cont++;
+        eje = next(r->ejercicios);
+    }
+}
+
 void mostrarRutinas(List* Rutinas){
 
     int caso=1;
@@ -385,15 +418,16 @@ void mostrarRutinas(List* Rutinas){
         scanf("%d", &caso);
 
         switch(caso){
-            case 1:modificarRutina(Rutinas);break;
+            //case 1:modificarRutina(Rutinas);break;
             case 2:borrarRutina(Rutinas);break;
+            
         }
     }
 }
 
-void modificarRutinas(List* Rutinas){
+//void modificarRutinas(List* Rutinas){
 
-}
+//}
 
 int main(){
     HashMap* Ejercicios=createMap(100);
@@ -430,7 +464,7 @@ int main(){
         switch(caso)
         {
             case 1:crearRutina(Ejercicios,Rutinas,Tipos);break;
-            case 2:realizaRutina(stackIMC);break;
+            case 2:realizaRutina(stackIMC, stackH, Rutinas);break;
             case 3:mostrarRutinas(Rutinas);break;
             case 4:HistorialRutinas(stackH);
             case 5:break;
