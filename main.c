@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include <ctype.h>
 #include<stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -9,17 +10,17 @@
 
 //----------------------Estructuras----------------------
 typedef struct{
-    char nombre;
+    char nombre[100];
     void* ejercicios;
     long calorias;
-    long id;
+    int id;
     int tiempo;
 }Rutina;
 
 typedef struct{
     char nombre[50];
     char tipo[20];
-    List* dificultades;
+    void* dificultades;
 }Ejercicio;
 
 typedef struct{
@@ -40,6 +41,8 @@ typedef struct{
 
 //-------------------------------------------------------
 
+//Funciones de construccion de estructuras
+
 Ejercicio* createEjercicio(char *nombre, char* tipo){
     Ejercicio* e = (Ejercicio*) malloc(sizeof(Ejercicio));
     strcpy(e->nombre,nombre);
@@ -55,6 +58,16 @@ Dificultad* createDificultad(char * nivel,char* descripcion,int tiempo, int seri
     d->series=series;
     d->repeticiones=repeticiones;
     return d;
+}
+
+Rutina* createRutina(char* nombre, int id, int tiempo,void* ejercicios, long calorias){
+    Rutina* r = (Rutina*)malloc(sizeof(Rutina));
+    strcpy(r->nombre,nombre);
+    r->id = id;
+    r->tiempo = tiempo;
+    r->calorias=calorias;
+    r->ejercicios = ejercicios;
+    return r;
 }
 
 //Funcion para leer el k-esimo elemento de un string (separado por comas) nos ayuda para cargar el archivo
@@ -242,7 +255,7 @@ void mostrarEjercicios(HashMap *mapTipo)
                 printf("Nivel: %s\n",d->nivel);
                 printf("Repeticiones: %d\n",d->repeticiones);
                 printf("Series: %d\n",d->series);
-                printf("Tiempo: %d\n",d->tiempo);
+                printf("Tiempo aproximado por serie: %d segundos\n",d->tiempo);
                 printf("-----------------------------------------------------------------------\n");
                 printf("Descripcion: %s\n",d->descripcion);
                 printf("-----------------------------------------------------------------------\n");
@@ -281,12 +294,114 @@ void HistorialRutinas(Stack *s)
     }
 }
 
+
+void crearRutina(HashMap* Ejercicios,List* Rutinas, HashMap* Tipos){
+    char nombre[41],answer[3];
+    int cant=0,cont=0,tiempo=0,id,calorias=0;
+    bool flag=true;
+    printf("-----------------------------------------------------------------------\n");
+    printf("                          CREAR TU RUTINA                              \n");
+    printf("-----------------------------------------------------------------------\n");
+    printf("Ingresa un nombre a tu rutina:");
+    getchar();
+    scanf("%40[^\n]s", nombre);
+    getchar();
+    printf("%s\n",nombre);
+    printf("A continuacion se desplegaran todos los ejercicios disponibles para agregar a tu rutina\n");
+    mostrarEjercicios(Tipos);
+    printf("Ingresa la cantidad de ejercicios que deseas agregar a tu rutina ");
+    scanf("%d",&cant);
+    
+    Cola* ejerRutina=createCola();
+    do{
+        char nombreEjercicio[30],dificultad[10];
+        int n=0;
+        getchar();
+        printf("Ingrese el nombre del ejercicio: ");
+        scanf("%29[^\n]s", nombreEjercicio);
+        Ejercicio* ejercicio = searchMap(Ejercicios,nombreEjercicio);
+        if(ejercicio){
+            printf("Ingrese la dificultad:");
+            scanf("%s",&dificultad);
+            //Convertimos en mayuscula la dificultad ingresada por el usuario para mantener el formato del almacenamiento
+            for(int i=0;i<strlen(dificultad);i++)dificultad[i]=toupper(dificultad[i]);
+            
+            Ejercicio* new=createEjercicio(ejercicio->nombre,ejercicio->tipo);
+            Dificultad* d = first(ejercicio->dificultades);
+            
+            for(int i=0;i<3;i++){
+                if(!strcmp(d->nivel,dificultad)){
+                    new->dificultades=d;
+                    tiempo+=(d->tiempo * d->repeticiones);
+                    break;
+                }
+            }
+            pushCola(ejerRutina,new);
+
+            cont++;
+            if(cant==cont){
+                printf("¿Quieres agregar mas ejercicios? escribe SI o NO ");
+                scanf("%s",&answer);
+                if(!strcmp(answer,"SI")){
+                    printf("Ingrese la cantidad de los ejercicios a agregar \n");
+                    scanf("%d\n",&n);
+                    cant+=n;
+                }
+                else flag=false;
+            }
+        }
+        else printf("El nombre no se encuentra o no esta correctamente escrito, intente nuevamente\n");
+
+    }while(flag);
+    id=get_size(Rutinas)+1;
+    Rutina* rutina = createRutina(nombre,id, tiempo,ejerRutina,calorias);
+    pushBack(Rutinas,rutina);
+    printf("Su rutina se ha creado con exito\n");
+}
+
+
+void borrarRutina(List *Rutinas){
+    int id;
+    printf("Ingrese la id de la rutina a eliminar: \n");
+    scanf("%d\n",&id);
+
+    Rutina* aux=first(Rutinas);
+    while(aux){
+        if(aux->id==id){
+            popCurrent(Rutinas);
+            printf("La rutina se elimino correctamente\n");
+            return;
+        }
+    }
+}
+
+void mostrarRutinas(List* Rutinas){
+
+    int caso=1;
+    while(caso!=0){
+        printf("1. Modificar rutina\n");
+        printf("2. Eliminar rutina\n");
+        printf(" 0. Volver al menu principal\n");
+        scanf("%d", &caso);
+
+        switch(caso){
+            case 1:modificarRutina(Rutinas);break;
+            case 2:borrarRutina(Rutinas);break;
+        }
+    }
+}
+
+void modificarRutinas(List* Rutinas){
+
+}
+
 int main(){
     HashMap* Ejercicios=createMap(100);
     HashMap* Tipos=createMap(10);
     int masaCorporal = 0;
     Stack *stackIMC = createStack();
     Stack *stackH = createStack();
+    List* Rutinas=createList();
     
     int caso=2;
     Cargar(Ejercicios,Tipos);
@@ -314,9 +429,9 @@ int main(){
 
         switch(caso)
         {
-            case 1:break;
+            case 1:crearRutina(Ejercicios,Rutinas,Tipos);break;
             case 2:realizaRutina(stackIMC);break;
-            case 3:mostrarEjercicios(Tipos);break;
+            case 3:mostrarRutinas(Rutinas);break;
             case 4:HistorialRutinas(stackH);
             case 5:break;
             case 6:break;
