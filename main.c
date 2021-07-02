@@ -70,6 +70,16 @@ Rutina* createRutina(char* nombre, int id, int tiempo,void* ejercicios, long cal
     return r;
 }
 
+Comida* createComida(char* nombre, long kc, long fats, long carbs, long prots){
+    Comida* c = (Comida*) malloc(sizeof(Comida));
+    strcpy(c->nombre,nombre);
+    c->calorias=kc;
+    c->grasas=fats;
+    c->carbohidratos=carbs;
+    c->proteinas=prots;
+    return c;
+}
+
 //Funcion para leer el k-esimo elemento de un string (separado por comas) nos ayuda para cargar el archivo
 char*get_csv_field (char * tmp, int k){
     int open_mark = 0;
@@ -392,34 +402,6 @@ void borrarRutina(List *Rutinas){
     return;
 }
 
-<<<<<<< Updated upstream
-void detalleRutina(Rutina *r)
-{
-    int cont=0;
-    //Rutina *r = first(Ruti);
-    printf("-----------------------------------------------------------------------\n");
-    printf("DETALLES DE LA RUTINA\n");
-    printf("-----------------------------------------------------------------------\n");
-    printf("Id: %d\n",r->id);
-    printf("Nombre: %s\n",r->nombre);
-    printf("Tiempo: %d\n",r->tiempo);
-    printf("Calorias: %ld\n",r->calorias);
-    Ejercicio *eje = first(r->ejercicios);
-    printf("-----------------------------------------------------------------------\n");
-    printf("EJERCICIOS\n");
-    printf("-----------------------------------------------------------------------\n");
-    while (eje)
-    {
-        printf("Nombre: %s\n",eje->nombre);
-        printf("Tipo: %s\n",eje->tipo);
-        printf("-----------------------------------------------------------------------\n");
-        cont++;
-        eje = next(r->ejercicios);
-    }
-}
-
-void mostrarRutinas(List* Rutinas){
-=======
 char* limpiarChar(char *palabra){
     for(int i=0;i<strlen(palabra);i++){
         palabra[i]=0;
@@ -458,7 +440,6 @@ void modificarRutina(List* Rutinas){
         }
     }
 }
->>>>>>> Stashed changes
 
 void mostrarRutinas(List* Rutinas){
     Rutina* aux = first(Rutinas);
@@ -482,16 +463,66 @@ void mostrarRutinas(List* Rutinas){
     }
 }
 
-<<<<<<< Updated upstream
-//void modificarRutinas(List* Rutinas){
+void detalleRutina(Rutina *r)
+{
+    int cont=0;
+    //Rutina *r = first(Ruti);
+    printf("-----------------------------------------------------------------------\n");
+    printf("DETALLES DE LA RUTINA\n");
+    printf("-----------------------------------------------------------------------\n");
+    printf("Id: %d\n",r->id);
+    printf("Nombre: %s\n",r->nombre);
+    printf("Tiempo: %d\n",r->tiempo);
+    printf("Calorias: %ld\n",r->calorias);
+    Ejercicio *eje = first(r->ejercicios);
+    printf("-----------------------------------------------------------------------\n");
+    printf("EJERCICIOS\n");
+    printf("-----------------------------------------------------------------------\n");
+    while (eje)
+    {
+        printf("Nombre: %s\n",eje->nombre);
+        printf("Tipo: %s\n",eje->tipo);
+        printf("-----------------------------------------------------------------------\n");
+        cont++;
+        eje = next(r->ejercicios);
+    }
+}
 
-//}
-=======
->>>>>>> Stashed changes
+void cargarComida(HashMap* mapComida){
+    FILE *archivo;
+    archivo = fopen("Alimentos.csv", "r" );
+    char linea[100];
+    fgets(linea,99,archivo);
+
+    while(fgets(linea,100,archivo)){
+        char* name;
+        long kc, fats, carbs, prots;
+        for(int i=0;i<5;i++){
+            char* aux = get_csv_field(linea,i);
+            if(i==0)name=aux;
+            if(i==1)kc=conversorInt(aux);
+            if(i==2)fats=conversorInt(aux);
+            if(i==3)carbs=conversorInt(aux);
+            if(i==4)prots=conversorInt(aux);
+        }
+        Comida* Alimento= searchMap(mapComida,name);
+        if(!Alimento){
+            Alimento= createComida(name,kc,fats,carbs,prots);
+            insertMap(mapComida,name,Alimento);
+        }
+    }
+    fclose(archivo);
+}
+
+void menuComida(HashMap* mapComida){
+    printf("En proceso de ser diseñada\n");
+}
+
 
 int main(){
     HashMap* Ejercicios=createMap(100);
     HashMap* Tipos=createMap(10);
+    HashMap* Comidas=createMap(100);
     int masaCorporal = 0;
     Stack *stackIMC = createStack();
     Stack *stackH = createStack();
@@ -529,7 +560,7 @@ int main(){
             case 4:HistorialRutinas(stackH);
             case 5:break;
             case 6:break;
-            case 7:break;
+            case 7:menuComida(Comidas);break;
             case 8:desempenoEntrenamiento(stackIMC);break;
         }
     }
