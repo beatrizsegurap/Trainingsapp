@@ -25,7 +25,7 @@ typedef struct{
 
 typedef struct{
     char nivel[12];
-    char descripcion[2000];
+    char descripcion[3000];
     int tiempo;
     int series;
     int repeticiones;
@@ -52,11 +52,11 @@ Ejercicio* createEjercicio(char *nombre, char* tipo){
 
 Dificultad* createDificultad(char * nivel,char* descripcion,int tiempo, int series,int repeticiones){
     Dificultad *d = (Dificultad*)malloc(sizeof(Dificultad));
-    strcpy(d->nivel,nivel);
-    strcpy(d->descripcion,descripcion);
     d->tiempo=tiempo;
     d->series=series;
     d->repeticiones=repeticiones;
+    strcpy(d->nivel,nivel);
+    strcpy(d->descripcion,descripcion);
     return d;
 }
 
@@ -73,7 +73,7 @@ Rutina* createRutina(char* nombre, int id, int tiempo,void* ejercicios, long cal
 //Funcion para leer el k-esimo elemento de un string (separado por comas) nos ayuda para cargar el archivo
 char*get_csv_field (char * tmp, int k){
     int open_mark = 0;
-    char* ret=(char*) malloc(2000*sizeof(char));
+    char* ret=(char*) malloc(1000*sizeof(char));
     int ini_i=0, i=0;
     int j=0;
     while(tmp[i+1]!='\0'){
@@ -152,6 +152,10 @@ void Cargar(HashMap * mapEjercicios, HashMap * mapTipos){
         else{
             Dificultad* d = createDificultad(dificultad,descripcion,tiempo,series,repeticiones);
             pushBack(Ejercicio->dificultades,d);
+            Dificultad* auxiliar = first(Ejercicio->dificultades);
+            while(auxiliar){
+                auxiliar=next(Ejercicio->dificultades);
+            }
         }
 
         if(!Tipo){
@@ -304,7 +308,7 @@ void HistorialRutinas(Stack *s)
 
 
 void crearRutina(HashMap* Ejercicios,List* Rutinas, HashMap* Tipos){
-    char nombre[41],answer[3];
+    char nombre[100],answer[3];
     int cant=0,cont=0,tiempo=0,id,calorias=0;
     bool flag=true;
     printf("-----------------------------------------------------------------------\n");
@@ -312,7 +316,7 @@ void crearRutina(HashMap* Ejercicios,List* Rutinas, HashMap* Tipos){
     printf("-----------------------------------------------------------------------\n");
     printf("Ingresa un nombre a tu rutina:");
     getchar();
-    scanf("%40[^\n]s", nombre);
+    scanf("%99[^\n]s", nombre);
     getchar();
     printf("%s\n",nombre);
     printf("A continuacion se desplegaran todos los ejercicios disponibles para agregar a tu rutina\n");
@@ -337,12 +341,15 @@ void crearRutina(HashMap* Ejercicios,List* Rutinas, HashMap* Tipos){
             Ejercicio* new=createEjercicio(ejercicio->nombre,ejercicio->tipo);
             Dificultad* d = first(ejercicio->dificultades);
             
-            for(int i=0;i<3;i++){
+            while(d){
+                printf("%s\n",d->nivel);
                 if(!strcmp(d->nivel,dificultad)){
                     new->dificultades=d;
-                    tiempo+=(d->tiempo * d->repeticiones);
+                    tiempo+=(d->tiempo * d->series);
+                    printf("\n tiempo: %d \n",tiempo);
                     break;
                 }
+                d=next(ejercicio->dificultades);
             }
             pushCola(ejerRutina,new);
 
@@ -380,9 +387,12 @@ void borrarRutina(List *Rutinas){
             printf("La rutina se elimino correctamente\n");
             return;
         }
+        aux=next(Rutinas);
     }
+    return;
 }
 
+<<<<<<< Updated upstream
 void detalleRutina(Rutina *r)
 {
     int cont=0;
@@ -409,7 +419,54 @@ void detalleRutina(Rutina *r)
 }
 
 void mostrarRutinas(List* Rutinas){
+=======
+char* limpiarChar(char *palabra){
+    for(int i=0;i<strlen(palabra);i++){
+        palabra[i]=0;
+    }
+    return palabra;
+}
 
+void modificarRutina(List* Rutinas){
+    int id;
+    printf("Ingrese la id de la rutina a modificar: \n");
+    scanf("%d\n",&id);
+
+    Rutina* aux=first(Rutinas);
+    while(aux){
+        if(aux->id==id){
+            int caso=1;
+            while(caso!=0){
+                printf("\n1. Modificar nombre\n");
+                printf("2. Modificar los ejercicios\n");
+                printf(" 0. Volver al menu de rutinas\n");
+                scanf("%d", &caso);
+
+                switch(caso){
+                    case 1: printf("\nEscriba el nuevo nombre: ");
+                            char nombre[100];
+                            scanf("%99[^\n]s", nombre);
+                            getchar();
+                            limpiarChar(nombre);
+                            strcpy(aux->nombre,nombre);
+                            printf("el nuevo nombre es <%s>\n",aux->nombre);
+                            break;
+                    case 2:break;
+                }
+            }
+            return;
+        }
+    }
+}
+>>>>>>> Stashed changes
+
+void mostrarRutinas(List* Rutinas){
+    Rutina* aux = first(Rutinas);
+    printf("ID       NOMBRE           TIEMPO\n");
+    while(aux){
+        printf("%d       %s      %d\n",aux->id,aux->nombre,aux->tiempo);
+        aux=next(Rutinas);
+    }
     int caso=1;
     while(caso!=0){
         printf("1. Modificar rutina\n");
@@ -425,9 +482,12 @@ void mostrarRutinas(List* Rutinas){
     }
 }
 
+<<<<<<< Updated upstream
 //void modificarRutinas(List* Rutinas){
 
 //}
+=======
+>>>>>>> Stashed changes
 
 int main(){
     HashMap* Ejercicios=createMap(100);
