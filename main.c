@@ -241,18 +241,6 @@ void desempenoEntrenamiento (Stack *s)
         printf("------------------------------------------------------\n");
     }
 }
-void realizaRutina(Stack *stackIMC, Stack *stackH, List *rutinas)
-{
-   // int cont =1, i,op;
-    CalcularIMC(stackIMC);
-    /*Rutina *r = first(rutinas);
-    while (r)
-    {
-        printf("%d.- %s",cont,r->nombre);
-        cont++;
-        r = next(rutinas);
-    }*/
-}
 
 //Muestra todos los ejercicios disponibles, ordenados por tipo
 void mostrarEjercicios(HashMap *mapTipo)
@@ -294,6 +282,7 @@ void mostrarEjercicios(HashMap *mapTipo)
 //Muestra el Historial de rutinas realizadas por el usuario
 void HistorialRutinas(Stack *s)
 {
+    int tiempo;
     printf("------------------------------------------------------\n");
     if(get_size(s)==0) printf("            NO HA REALIZADO RUTINAS\n");
     if(get_size(s)!=0)printf("             Sus Rutinas realizadas son\n");
@@ -303,12 +292,16 @@ void HistorialRutinas(Stack *s)
     
     while (get_size(s)!=0)
     {
-        strcpy(i,topStack(s)); 
+        Rutina *r = topStack(s);
+        tiempo = r->tiempo;
+        if(tiempo<60) printf("La Rutina %s tiene un tiempo de %d segundos aproximadamente\n",r->nombre,r->tiempo);
+        if(tiempo>59) printf("La Rutina %s tiene un tiempo de %d minutos aproximadamente\n",r->nombre,(r->tiempo)/60);
+        //strcpy(i,topStack(s)); 
         pushStack(s2,topStack(s));
         popStack(s);
-        printf("Nombre Rutina : %s\n",i);
+        printf("------------------------------------------------------\n");
     }
-    //printf("------------------------------------------------------\n");
+    
     while (get_size(s2)!=0)
     {
         pushStack(s,topStack(s2));
@@ -518,6 +511,43 @@ void menuComida(HashMap* mapComida){
     printf("En proceso de ser diseñada\n");
 }
 
+void realizaRutina(Stack *stackIMC, Stack *stackH, List *rutinas)
+{
+    int cont =0, i,op=2;
+    CalcularIMC(stackIMC);
+    Rutina *r = first(rutinas);
+    while (op != 0)
+    {
+        printf("-----------------------------------------------------------------------\n");
+        printf("SUS RUTINAS\n");
+        printf("-----------------------------------------------------------------------\n");
+        while (r)
+        {
+            cont++;
+            printf("%d.- %s\n",cont,r->nombre);
+            r = next(rutinas);
+        }
+        printf("-----------------------------------------------------------------------\n");
+        printf("INGRESE EL NUMERO DE LA RUTINA QUE DESEA REALIZAR\n");
+        printf("-----------------------------------------------------------------------\n");
+        scanf("%d",&op);
+        r = first(rutinas);
+        //detalleRutina(r);/*
+        for(i=1 ; i<=cont+1 ; i++)
+        {
+            if(op == i)
+            {
+                detalleRutina(r);
+                pushStack(stackH,r);
+                break;
+            }
+            r = next(rutinas);
+        }
+        printf("SI DESEA SALIR PRESIONE '0'\n");
+        scanf("%d",&op);
+    }
+    
+}
 
 int main(){
     HashMap* Ejercicios=createMap(100);
