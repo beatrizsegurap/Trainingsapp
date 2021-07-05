@@ -332,6 +332,7 @@ void crearRutina(HashMap* Ejercicios,List* Rutinas, HashMap* Tipos){
         char nombreEjercicio[30],dificultad[10];
         int n=0;
         getchar();
+        printf("--------------------------------------------------------------------\n");
         printf("Ingrese el nombre del ejercicio: ");
         scanf("%29[^\n]s", nombreEjercicio);
         Ejercicio* ejercicio = searchMap(Ejercicios,nombreEjercicio);
@@ -345,11 +346,9 @@ void crearRutina(HashMap* Ejercicios,List* Rutinas, HashMap* Tipos){
             Dificultad* d = first(ejercicio->dificultades);
             
             while(d){
-                printf("%s\n",d->nivel);
                 if(!strcmp(d->nivel,dificultad)){
                     new->dificultades=d;
                     tiempo+=(d->tiempo * d->series);
-                    printf("\n tiempo: %d \n",tiempo);
                     break;
                 }
                 d=next(ejercicio->dificultades);
@@ -358,6 +357,7 @@ void crearRutina(HashMap* Ejercicios,List* Rutinas, HashMap* Tipos){
 
             cont++;
             if(cant==cont){
+                printf("--------------------------------------------------------------------\n");
                 printf("¿Quieres agregar mas ejercicios? escribe SI o NO ");
                 scanf("%s",&answer);
                 if(!strcmp(answer,"SI")){
@@ -374,11 +374,15 @@ void crearRutina(HashMap* Ejercicios,List* Rutinas, HashMap* Tipos){
     id=get_size(Rutinas)+1;
     Rutina* rutina = createRutina(nombre,id, tiempo,ejerRutina,calorias);
     pushBack(Rutinas,rutina);
-    printf("Su rutina se ha creado con exito\n");
+    printf("-----------------------------------------------------------------------\n");
+    printf("*******************Su rutina se ha creado con exito********************\n");
+    printf("-----------------------------------------------------------------------\n");
+    printf("\n");
 }
 
 
 void borrarRutina(List *Rutinas){
+    printf("--------------------------------------------------------------------\n");
     int id;
     printf("Ingrese la id de la rutina a eliminar: \n");
     scanf("%d\n",&id);
@@ -388,10 +392,13 @@ void borrarRutina(List *Rutinas){
         if(aux->id==id){
             popCurrent(Rutinas);
             printf("La rutina se elimino correctamente\n");
+            printf("--------------------------------------------------------------------\n");
             return;
         }
         aux=next(Rutinas);
     }
+    printf("La rutina no se encontro\n");
+    printf("--------------------------------------------------------------------\n");
     return;
 }
 
@@ -403,10 +410,11 @@ char* limpiarChar(char *palabra){
 }
 
 void modificarRutina(List* Rutinas){
+    printf("--------------------------------------------------------------------\n");
     int id;
     printf("Ingrese la id de la rutina a modificar: \n");
     scanf("%d\n",&id);
-
+    printf("--------------------------------------------------------------------\n");
     Rutina* aux=first(Rutinas);
     while(aux){
         if(aux->id==id){
@@ -414,17 +422,19 @@ void modificarRutina(List* Rutinas){
             while(caso!=0){
                 printf("\n1. Modificar nombre\n");
                 printf("2. Modificar los ejercicios\n");
-                printf(" 0. Volver al menu de rutinas\n");
+                printf("0. Volver al menu de rutinas\n");
                 scanf("%d", &caso);
 
                 switch(caso){
-                    case 1: printf("\nEscriba el nuevo nombre: ");
+                    case 1: printf("--------------------------------------------------------------------\n");
+                            printf("\nEscriba el nuevo nombre: ");
                             char nombre[100];
                             scanf("%99[^\n]s", nombre);
                             getchar();
                             limpiarChar(nombre);
                             strcpy(aux->nombre,nombre);
                             printf("el nuevo nombre es <%s>\n",aux->nombre);
+                            printf("--------------------------------------------------------------------\n");
                             break;
                     case 2:break;
                 }
@@ -436,12 +446,12 @@ void modificarRutina(List* Rutinas){
 
 void mostrarRutinas(List* Rutinas){
     Rutina* aux = first(Rutinas);
-    printf("ID       NOMBRE           TIEMPO\n");
-    while(aux){
-        printf("%d       %s      %d\n",aux->id,aux->nombre,aux->tiempo);
+    while (aux){
+        detalleRutina(aux);
         aux=next(Rutinas);
     }
     int caso=1;
+    printf("--------------------------------------------------------------------\n");
     while(caso!=0){
         printf("1. Modificar rutina\n");
         printf("2. Eliminar rutina\n");
@@ -449,11 +459,12 @@ void mostrarRutinas(List* Rutinas){
         scanf("%d", &caso);
 
         switch(caso){
-            //case 1:modificarRutina(Rutinas);break;
+            case 1:modificarRutina(Rutinas);break;
             case 2:borrarRutina(Rutinas);break;
             
         }
     }
+    printf("--------------------------------------------------------------------\n");
 }
 
 void detalleRutina(Rutina *r)
@@ -564,6 +575,7 @@ int main(){
     printf("                            TRAININGSAPP                             \n");
     printf("-----------------------------------------------------------------------\n");
     printf("Hola, te damos la bienvenida a TrainingsApp una aplicacion que te ayudara a mantener tu entrenamiento al dia\n");
+    printf("-----------------------------------------------------------------------\n");
     printf("Por favor ingresa tu peso en kg sin decimales:\n");
     scanf("%d",&masaCorporal);
     //printf("%d\n",masaCorporal);
@@ -585,7 +597,7 @@ int main(){
         switch(caso)
         {
             case 1:crearRutina(Ejercicios,Rutinas,Tipos);break;
-            case 2:realizaRutina(stackIMC, stackH, Rutinas);break;
+            case 2:realizarRutina(stackIMC, stackH, Rutinas);break;
             case 3:mostrarRutinas(Rutinas);break;
             case 4:HistorialRutinas(stackH);
             case 5:break;
