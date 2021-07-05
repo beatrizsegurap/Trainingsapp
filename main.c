@@ -209,16 +209,19 @@ void CalcularIMC(Stack *HistorialI){
 
     float p;
     float h;
-    printf("Antes de comenzar\nPor favor ingrese\n");
+    printf("------------------------------------------------------\n");
+    printf("Antes de comenzar, por favor ingrese\n");
+    printf("------------------------------------------------------\n");
     printf("Su masa corporal: ");
     scanf("%f",&p);
+    printf("------------------------------------------------------\n");
     printf("Su Altura: ");
     scanf("%f",&h);
     float * IMC = malloc (sizeof(float)); 
     *IMC = p/(h*h);
     printf("------------------------------------------------------\n");
     printf("         Su IMC actual es: %f\n",*IMC);
-    printf("------------------------------------------------------\n");
+    //printf("------------------------------------------------------\n");
     pushStack(HistorialI,IMC);
 }
 
@@ -244,25 +247,6 @@ void HistorialIMC(Stack *HistorialI)
     {
         pushStack(HistorialI,topStack(s2));
         popStack(s2);
-    }
-}
-
-//Muestra el tiempo total invertido en la aplicacion y da posibilidad de mostrar el Historial de IMC
-void desempenoEntrenamiento (Stack *s)
-{
-    int caso=3;
-    while (caso!=0)
-    {
-        printf("           ESCOJA UNA OPCION         \n");
-        printf("------------------------------------------------------\n");
-        printf("1. Mostrar Historial IMC\n");
-        printf("0. Salir\n");
-        scanf("%d",&caso);
-        switch (caso)
-        {
-            case 1: HistorialIMC(s);break;
-        }
-        printf("------------------------------------------------------\n");
     }
 }
 
@@ -519,39 +503,76 @@ void mostrarRutinas(List* Rutinas){
 void realizarRutina(Stack *stackIMC, Stack *stackH, List *rutinas)
 {
     int cont =0, i,op=2;
-    CalcularIMC(stackIMC);
-    Rutina *r = first(rutinas);
-    while (op != 0)
+    if(get_size(rutinas)!=0)
+    {
+        CalcularIMC(stackIMC);
+        Rutina *r = first(rutinas);
+
+        while (op != 0)
+        {
+           printf("-----------------------------------------------------------------------\n");
+           printf("SUS RUTINAS\n");
+           printf("-----------------------------------------------------------------------\n");
+           while (r)
+           {
+               cont++;
+               printf("%d.- %s\n",cont,r->nombre);
+               r = next(rutinas);
+           }
+           printf("-----------------------------------------------------------------------\n");
+           printf("INGRESE EL NUMERO DE LA RUTINA QUE DESEA REALIZAR\n");
+           printf("-----------------------------------------------------------------------\n");
+           op = cont*3;
+           while (op>=cont+1)
+           {
+               scanf("%d",&op);
+               if(op>=cont+1)printf("INGRESE NUEVAMENTE EL NUMERO\n");
+           }
+           r = first(rutinas);
+           //detalleRutina(r);/*
+           for(i=1 ; i<=cont+1 ; i++)
+           {
+               if(op == i)
+               {
+                   detalleRutina(r);
+                   pushStack(stackH,r);
+                   break;
+               }
+               r = next(rutinas);
+           }
+           printf("SI DESEA SALIR PRESIONE '0'\n");
+           scanf("%d",&op);
+           cont = 0;
+       }
+    }
+    else 
     {
         printf("-----------------------------------------------------------------------\n");
-        printf("SUS RUTINAS\n");
+        printf("AUN NO HA CREADO RUTINAS\n");
         printf("-----------------------------------------------------------------------\n");
-        while (r)
-        {
-            cont++;
-            printf("%d.- %s\n",cont,r->nombre);
-            r = next(rutinas);
-        }
-        printf("-----------------------------------------------------------------------\n");
-        printf("INGRESE EL NUMERO DE LA RUTINA QUE DESEA REALIZAR\n");
-        printf("-----------------------------------------------------------------------\n");
-        scanf("%d",&op);
-        r = first(rutinas);
-        //detalleRutina(r);/*
-        for(i=1 ; i<=cont+1 ; i++)
-        {
-            if(op == i)
-            {
-                detalleRutina(r);
-                pushStack(stackH,r);
-                break;
-            }
-            r = next(rutinas);
-        }
-        printf("SI DESEA SALIR PRESIONE '0'\n");
-        scanf("%d",&op);
     }
     
+}
+
+//Muestra el tiempo total invertido en la aplicacion y da posibilidad de mostrar el Historial de IMC
+void desempenoEntrenamiento (Stack *s, Stack *s2)
+{
+    int caso=3;
+    while (caso!=0)
+    {
+        printf("           ESCOJA UNA OPCION         \n");
+        printf("------------------------------------------------------\n");
+        printf("1. Mostrar Historial IMC\n");
+        printf("2. Mostrar Historial de Rutinas\n");
+        printf("0. Salir\n");
+        scanf("%d",&caso);
+        switch (caso)
+        {
+            case 1: HistorialIMC(s);break;
+            case 2: HistorialRutinas(s2);break;
+        }
+        printf("------------------------------------------------------\n");
+    }
 }
 
 void mostrarDieta(Stack* s){
@@ -634,7 +655,7 @@ void anadirComida(Stack* s, HashMap* map){
     int x;
     getchar();
     char nombre[50];
-    printf("Favor ingrese el nombre del alimento que desea añadir a su dieta de hoy\n");
+    printf("Favor ingrese el nombre del alimento que desea anadir a su dieta de hoy\n");
     scanf("%[^\n]",nombre);
     //fgets(nombre, 50, stdin);
     Alimento = searchMap(map, nombre);
@@ -660,7 +681,7 @@ void menuComida(HashMap* mapComida, Stack* Dieta){
     printf("-----------------------------------------------------------------------\n");
     while(caso!=0){
         printf("Favor ingrese la accion que quiere ejercer\n");
-        printf(" 1. Añadir Comida\n");
+        printf(" 1. Anadir Comida\n");
         printf(" 2. Ver dieta de hoy\n");
         printf(" 3. Crear alimento\n");
         printf(" 0. Salir\n");
@@ -691,7 +712,7 @@ int main(){
     printf("-----------------------------------------------------------------------\n");
     printf("Hola, te damos la bienvenida a TrainingsApp una aplicacion que te ayudara a mantener tu entrenamiento al dia\n");
     printf("-----------------------------------------------------------------------\n");
-    printf("Por favor ingresa tu peso en kg sin decimales:\n");
+    printf("Por favor ingresa tu peso en kg sin decimales:");
     scanf("%d",&masaCorporal);
     //printf("%d\n",masaCorporal);
     //CalcularIMC(stackIMC);
@@ -701,11 +722,11 @@ int main(){
         printf(" 1. Crear rutina\n");
         printf(" 2. Realizar rutina\n");
         printf(" 3. Rutinas\n");
-        printf(" 4. Historial de rutinas\n");
-        printf(" 5. Calorias quemadas\n");
-        printf(" 6. Balance de calorias\n");
-        printf(" 7. Comidas \n");
-        printf(" 8. Desempeno de entrenamiento diario\n");
+        //printf(" 4. Historial de rutinas\n");
+        printf(" 4. Calorias quemadas\n");
+        printf(" 5. Balance de calorias\n");
+        printf(" 6. Comidas \n");
+        printf(" 7. Desempeno de entrenamiento\n");
         printf(" 0. Salir\n");
         scanf("%d", &caso);
 
@@ -714,11 +735,11 @@ int main(){
             case 1:crearRutina(Ejercicios,Rutinas,Tipos);break;
             case 2:realizarRutina(stackIMC, stackH, Rutinas);break;
             case 3:mostrarRutinas(Rutinas);break;
-            case 4:HistorialRutinas(stackH);
+            //case 4:HistorialRutinas(stackH);break;
+            case 4:break;
             case 5:break;
-            case 6:break;
-            case 7:menuComida(Comidas,Dieta);break;
-            case 8:desempenoEntrenamiento(stackIMC);break;
+            case 6:menuComida(Comidas,Dieta);break;
+            case 7:desempenoEntrenamiento(stackIMC, stackH);break;
         }
     }
     return 0;
