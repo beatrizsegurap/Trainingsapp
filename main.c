@@ -11,8 +11,7 @@
 //----------------------Estructuras----------------------
 typedef struct{
     char nombre[100];
-    void* ejercicios;
-    long calorias;
+    Cola* ejercicios;
     int id;
     int tiempo;
 }Rutina;
@@ -20,12 +19,12 @@ typedef struct{
 typedef struct{
     char nombre[50];
     char tipo[20];
-    void* dificultades;
+    List* dificultades;
 }Ejercicio;
 
 typedef struct{
-    char nivel[12];
-    char descripcion[3000];
+    int nivel;
+    char descripcion[1000];
     int tiempo;
     int series;
     int repeticiones;
@@ -50,22 +49,21 @@ Ejercicio* createEjercicio(char *nombre, char* tipo){
     return e;
 }
 
-Dificultad* createDificultad(char * nivel,char* descripcion,int tiempo, int series,int repeticiones){
+Dificultad* createDificultad(int nivel,char* descripcion,int tiempo, int series,int repeticiones){
     Dificultad *d = (Dificultad*)malloc(sizeof(Dificultad));
     d->tiempo=tiempo;
     d->series=series;
     d->repeticiones=repeticiones;
-    strcpy(d->nivel,nivel);
+    d->nivel=nivel;
     strcpy(d->descripcion,descripcion);
     return d;
 }
 
-Rutina* createRutina(char* nombre, int id, int tiempo,void* ejercicios, long calorias){
+Rutina* createRutina(char* nombre, int id, int tiempo,void* ejercicios){
     Rutina* r = (Rutina*)malloc(sizeof(Rutina));
     strcpy(r->nombre,nombre);
     r->id = id;
     r->tiempo = tiempo;
-    r->calorias=calorias;
     r->ejercicios = ejercicios;
     return r;
 }
@@ -137,18 +135,24 @@ void Cargar(HashMap * mapEjercicios, HashMap * mapTipos){
     fgets (linea, 1023, file);
 
     while (fgets (linea, 2999, file) != NULL){
-        char *nombre,*tipo,*descripcion,*dificultad;
-        int series,repeticiones,tiempo;
+        char *nombre,*tipo,*descripcion;
+        int series,repeticiones,tiempo,dificultad;
         for(int i=0;i<7;i++){
                 char *aux = get_csv_field(linea, i); 
                 if(i==0)nombre=aux;
                 if(i==1)tipo=aux;
-                if(i==2)dificultad=aux;
+                if(i==2){
+                    if(!strcmp(aux,"PRINCIPIANTE"))dificultad=1;
+                    if(!strcmp(aux,"MEDIO"))dificultad=2;
+                    if(!strcmp(aux,"DIFICIL"))dificultad=3;
+                }
                 if(i==3)tiempo=conversorInt(aux);
                 if(i==4)repeticiones=conversorInt(aux);
                 if(i==5)series=conversorInt(aux);
                 if(i==6)descripcion=aux;
         } 
+
+        //Guardamos los datos de los ejercicios en el mapa de ejercicios por nombre
         Ejercicio *Ejercicio = searchMap(mapEjercicios,nombre);
         List *Tipo = searchMap(mapTipos,tipo);
         if(!Ejercicio){
@@ -168,6 +172,7 @@ void Cargar(HashMap * mapEjercicios, HashMap * mapTipos){
             }
         }
 
+        //Creamos el mapa por tipo
         if(!Tipo){
             Tipo = createList();
             pushBack(Tipo,Ejercicio);
@@ -212,10 +217,10 @@ void CalcularIMC(Stack *HistorialI){
     printf("------------------------------------------------------\n");
     printf("Antes de comenzar, por favor ingrese\n");
     printf("------------------------------------------------------\n");
-    printf("Su masa corporal: ");
+    printf("Su masa corporal en kg: ");
     scanf("%f",&p);
     printf("------------------------------------------------------\n");
-    printf("Su Altura: ");
+    printf("Su Altura en metro: ");
     scanf("%f",&h);
     float * IMC = malloc (sizeof(float)); 
     *IMC = p/(h*h);
@@ -270,7 +275,10 @@ void mostrarEjercicios(HashMap *mapTipo)
             //while (d)
             if(d)
             {
-                printf("Nivel: %s\n",d->nivel);
+                printf("Nivel: ");
+                if(d->nivel==1)printf("PRINCIPIANTE\n");
+                if(d->nivel==2)printf("MEDIO\n");
+                if(d->nivel==3)printf("DIFICIL\n");
                 printf("Repeticiones: %d\n",d->repeticiones);
                 printf("Series: %d\n",d->series);
                 printf("Tiempo aproximado por serie: %d segundos\n",d->tiempo);
@@ -319,7 +327,7 @@ void HistorialRutinas(Stack *s)
 
 
 void crearRutina(HashMap* Ejercicios,List* Rutinas, HashMap* Tipos){
-    char nombre[100],answer[3];
+    char nombre[100];
     int cant=0,cont=0,tiempo=0,id,calorias=0;
     bool flag=true;
     printf("-----------------------------------------------------------------------\n");
@@ -335,52 +343,106 @@ void crearRutina(HashMap* Ejercicios,List* Rutinas, HashMap* Tipos){
     printf("Ingresa la cantidad de ejercicios que deseas agregar a tu rutina ");
     scanf("%d",&cant);
     
+    //Para crear la rutina la almacenamos en una cola asi al ir realizando la rutina podemos acceder en el orden que el usuario estimo conveniente en la creacion
     Cola* ejerRutina=createCola();
     do{
-        char nombreEjercicio[30],dificultad[10];
-        int n=0;
+        char nombreEjercicio[30];
+        int n=0,dificultad=0;
         getchar();
         printf("--------------------------------------------------------------------\n");
-        printf("Ingrese el nombre del ejercicio: ");
-        scanf("%29[^\n]s", nombreEjercicio);
-        Ejercicio* ejercicio = searchMap(Ejercicios,nombreEjercicio);
-        if(ejercicio){
-            printf("Ingrese la dificultad:");
-            scanf("%s",&dificultad);
-            //Convertimos en mayuscula la dificultad ingresada por el usuario para mantener el formato del almacenamiento
-            for(int i=0;i<strlen(dificultad);i++)dificultad[i]=toupper(dificultad[i]);
-            
-            Ejercicio* new=createEjercicio(ejercicio->nombre,ejercicio->tipo);
-            Dificultad* d = first(ejercicio->dificultades);
-            
-            while(d){
-                if(!strcmp(d->nivel,dificultad)){
-                    new->dificultades=d;
-                    tiempo+=(d->tiempo * d->series);
-                    break;
-                }
-                d=next(ejercicio->dificultades);
-            }
-            pushCola(ejerRutina,new);
+        printf("Ingrese el numero del nombre del ejercicio que desea seleccionar: \n");
+        printf("--------------------------------------------------------------------\n");
+        while(n==0){
+            printf("1.Flexiones de brazos\n");
+            printf("2.Abdominales\n");
+            printf("3.Elevacion invertida\n");
+            printf("4.Plancha lateral\n");
+            printf("5.Bicicleta\n");
+            printf("6.Plancha horizontal\n");
+            printf("7.Zancadas\n");
+            printf("8.Crunch\n");
+            printf("9.Sentadillas\n");
+            printf("10.Superman\n");
+            printf("11.Comandos\n");
+            printf("12.Elevacion de pelvis\n");
+            printf("13.Elevacion de piernas\n");
+            scanf("%d",&n);
 
-            cont++;
-            if(cant==cont){
-                printf("--------------------------------------------------------------------\n");
-                printf("¿Quieres agregar mas ejercicios? escribe SI o NO ");
-                scanf("%s",&answer);
-                if(!strcmp(answer,"SI")){
-                    printf("Ingrese la cantidad de los ejercicios a agregar \n");
-                    scanf("%d\n",&n);
-                    cant+=n;
-                }
-                else flag=false;
+            switch(n)
+            {
+                case 1:n=1;break;
+                case 2:n=2;break;
+                case 3:n=3;break;
+                case 4:n=4;break;
+                case 5:n=5;break;
+                case 6:n=6;break;
+                case 7:n=7;break;
+                case 8:n=8;break;
+                case 9:n=9;break;
+                case 10:n=10;break;
+                case 11:n=11;break;
+                case 12:n=12;break;
+                case 13:n=13;break;
+
             }
         }
-        else printf("El nombre no se encuentra o no esta correctamente escrito, intente nuevamente\n");
+
+        if(n==1)strcpy(nombreEjercicio,"Flexiones de brazos");
+        if(n==2)strcpy(nombreEjercicio,"Abdominales");
+        if(n==3)strcpy(nombreEjercicio,"Elevacion invertida");
+        if(n==4)strcpy(nombreEjercicio,"Plancha lateral");
+        if(n==5)strcpy(nombreEjercicio,"Bicicleta");
+        if(n==6)strcpy(nombreEjercicio,"Plancha horizontal");
+        if(n==7)strcpy(nombreEjercicio,"Zancadas");
+        if(n==8)strcpy(nombreEjercicio,"Crunch");
+        if(n==9)strcpy(nombreEjercicio,"Sentadillas");
+        if(n==10)strcpy(nombreEjercicio,"Superman");
+        if(n==11)strcpy(nombreEjercicio,"Comandos");
+        if(n==12)strcpy(nombreEjercicio,"Elevacion de pelvis");
+        if(n==13)strcpy(nombreEjercicio,"Elevacion de piernas");
+
+        printf("- Usted selecciono el ejercicio %s\n",nombreEjercicio);
+        printf("------------------------------------------------------\n");
+        printf("Ingrese el numero de la dificultad que desee seleccionar\n");
+        Ejercicio* ejercicio = searchMap(Ejercicios,nombreEjercicio);
+        while(dificultad==0){
+            printf("1.PRINCIPIANTE\n");
+            printf("2.MEDIO\n");
+            printf("3.DIFICIL\n");
+            scanf("%d",&dificultad);
+
+            switch (dificultad)
+            {
+                case 1:dificultad=1;break;
+                case 2:dificultad=2;break;
+                case 3:dificultad=3;break;
+            }
+        }
+        printf("------------------------------------------------------\n");
+        printf("\n");
+        Ejercicio* new=createEjercicio(ejercicio->nombre,ejercicio->tipo);
+        Dificultad* d = first(ejercicio->dificultades);
+            
+        while(d){
+            if(d->nivel==dificultad){
+                List* listEjer=createList();
+                pushBack(listEjer,d);
+                new->dificultades=listEjer;
+                tiempo+=(d->tiempo * d->series);
+                break;
+            }
+            d=next(ejercicio->dificultades);
+        }
+        pushCola(ejerRutina,new);
+
+        cont++;
+            
+        if(cant==cont)flag=false;
 
     }while(flag);
+
     id=get_size(Rutinas)+1;
-    Rutina* rutina = createRutina(nombre,id, tiempo,ejerRutina,calorias);
+    Rutina* rutina = createRutina(nombre,id, tiempo,ejerRutina);
     pushBack(Rutinas,rutina);
     printf("-----------------------------------------------------------------------\n");
     printf("*******************Su rutina se ha creado con exito********************\n");
@@ -417,34 +479,41 @@ char* limpiarChar(char *palabra){
     return palabra;
 }
 
+void modificarEjercicios(Rutina* aux){
+    
+}
+
 void modificarRutina(List* Rutinas){
     printf("--------------------------------------------------------------------\n");
     int id;
-    printf("Ingrese la id de la rutina a modificar: \n");
-    scanf("%d\n",&id);
+    printf("Ingrese la id de la rutina a modificar: ");
+    scanf("%d",&id);
     printf("--------------------------------------------------------------------\n");
     Rutina* aux=first(Rutinas);
     while(aux){
         if(aux->id==id){
             int caso=1;
             while(caso!=0){
-                printf("\n1. Modificar nombre\n");
+                printf("--------------------------------------------------------------------\n");
+                printf("\n");
+                printf("1. Modificar nombre\n");
                 printf("2. Modificar los ejercicios\n");
                 printf("0. Volver al menu de rutinas\n");
+                printf("--------------------------------------------------------------------\n");
                 scanf("%d", &caso);
 
                 switch(caso){
                     case 1: printf("--------------------------------------------------------------------\n");
                             printf("\nEscriba el nuevo nombre: ");
                             char nombre[100];
-                            scanf("%99[^\n]s", nombre);
                             getchar();
-                            limpiarChar(nombre);
+                            scanf("%99[^\n]s", nombre);
+                            limpiarChar(aux->nombre);
                             strcpy(aux->nombre,nombre);
                             printf("el nuevo nombre es <%s>\n",aux->nombre);
                             printf("--------------------------------------------------------------------\n");
                             break;
-                    case 2:break;
+                    case 2:modificarEjercicios(aux);break;
                 }
             }
             return;
@@ -461,8 +530,7 @@ void detalleRutina(Rutina *r)
     printf("-----------------------------------------------------------------------\n");
     printf("Id: %d\n",r->id);
     printf("Nombre: %s\n",r->nombre);
-    printf("Tiempo: %d\n",r->tiempo);
-    printf("Calorias: %ld\n",r->calorias);
+    printf("Tiempo: %d min\n",(r->tiempo/60));
     Ejercicio *eje = first(r->ejercicios);
     printf("-----------------------------------------------------------------------\n");
     printf("EJERCICIOS\n");
@@ -471,6 +539,14 @@ void detalleRutina(Rutina *r)
     {
         printf("Nombre: %s\n",eje->nombre);
         printf("Tipo: %s\n",eje->tipo);
+        printf("Nivel: ");
+        Dificultad* d=first(eje->dificultades);
+        if(d->nivel==1)printf("PRINCIPIANTE\n");
+        if(d->nivel==2)printf("MEDIO\n");
+        if(d->nivel==3)printf("DIFICIL\n");
+        printf("Tiempo estimado por serie: %d segundos\n",d->tiempo);
+        printf("Cantidad de repeticiones durante la serie: %d\n",d->repeticiones);
+        printf("Cantidad de series a realizar: %d\n",d->series);
         printf("-----------------------------------------------------------------------\n");
         cont++;
         eje = next(r->ejercicios);
@@ -488,7 +564,8 @@ void mostrarRutinas(List* Rutinas){
     while(caso!=0){
         printf("1. Modificar rutina\n");
         printf("2. Eliminar rutina\n");
-        printf(" 0. Volver al menu principal\n");
+        printf("0. Volver al menu principal\n");
+        printf("--------------------------------------------------------------------\n");
         scanf("%d", &caso);
 
         switch(caso){
@@ -529,7 +606,7 @@ void realizarRutina(Stack *stackIMC, Stack *stackH, List *rutinas)
                if(op>=cont+1)printf("INGRESE NUEVAMENTE EL NUMERO\n");
            }
            r = first(rutinas);
-           //detalleRutina(r);/*
+           detalleRutina(r);
            for(i=1 ; i<=cont+1 ; i++)
            {
                if(op == i)
@@ -540,7 +617,7 @@ void realizarRutina(Stack *stackIMC, Stack *stackH, List *rutinas)
                }
                r = next(rutinas);
            }
-           printf("SI DESEA SALIR PRESIONE '0'\n");
+           printf("Cuando hayas terminado presione '0'\n");
            scanf("%d",&op);
            cont = 0;
        }
@@ -694,6 +771,27 @@ void menuComida(HashMap* mapComida, Stack* Dieta){
     }
 }
 
+void caloriasQuemadas(Stack* Historial,int masaC){
+    printf("-----------------------------------------------------------------------\n");
+    printf("***************************CALORIAS QUEMADAS***************************\n");
+    printf("-----------------------------------------------------------------------\n");
+    printf("Estas son las calorias quemadas durante todo tu uso de la app\n");
+    long calorias=0;
+    int tiem=0, IMC=0;
+    Rutina* r = first(Historial);
+    if(!r){
+        printf("Aun no has quemado calorias porque no has realizado ninguna rutina\n");
+        printf("-----------------------------------------------------------------------\n");
+        return;
+    }
+    while(r){
+        tiem+=r->tiempo;
+        r=next(Historial);
+    }
+    IMC = round((tiem/60)*masaC*0.0175);
+    printf("Has quemado %d calorias durante todas tus rutinas realizadas\n",IMC);
+}
+
 int main(){
     HashMap* Ejercicios=createMap(100);
     HashMap* Tipos=createMap(10);
@@ -714,15 +812,13 @@ int main(){
     printf("-----------------------------------------------------------------------\n");
     printf("Por favor ingresa tu peso en kg sin decimales:");
     scanf("%d",&masaCorporal);
-    //printf("%d\n",masaCorporal);
-    //CalcularIMC(stackIMC);
+
     printf("-----------------------------------------------------------------------\n");
     while(caso!=0)
     {
         printf(" 1. Crear rutina\n");
         printf(" 2. Realizar rutina\n");
         printf(" 3. Rutinas\n");
-        //printf(" 4. Historial de rutinas\n");
         printf(" 4. Calorias quemadas\n");
         printf(" 5. Balance de calorias\n");
         printf(" 6. Comidas \n");
@@ -735,8 +831,7 @@ int main(){
             case 1:crearRutina(Ejercicios,Rutinas,Tipos);break;
             case 2:realizarRutina(stackIMC, stackH, Rutinas);break;
             case 3:mostrarRutinas(Rutinas);break;
-            //case 4:HistorialRutinas(stackH);break;
-            case 4:break;
+            case 4:caloriasQuemadas(stackH,masaCorporal);break;
             case 5:break;
             case 6:menuComida(Comidas,Dieta);break;
             case 7:desempenoEntrenamiento(stackIMC, stackH);break;
