@@ -248,7 +248,7 @@ void HistorialIMC(Stack *HistorialI)
         popStack(HistorialI);
         printf("IMC : %f\n",i);
     }
-    //printf("------------------------------------------------------\n");
+
     while (get_size(s2)!=0)
     {
         pushStack(HistorialI,topStack(s2));
@@ -266,14 +266,14 @@ void mostrarEjercicios(HashMap *mapTipo)
     List *aux = firstMap(mapTipo);
     while (aux)
     {
-        //printf(" NOMBRE     TIPO    NIVEL      REPETICIONES     SERIES    TIEMPO\n");
+
         Ejercicio *eje = first(aux);
         while (eje)
         {
             printf("Nombre: %s\n",eje->nombre);
             printf("Tipo: %s\n",eje->tipo);
             Dificultad *d = first(eje->dificultades);
-            //while (d)
+
             if(d)
             {
                 printf("Nivel: ");
@@ -286,14 +286,14 @@ void mostrarEjercicios(HashMap *mapTipo)
                 printf("-----------------------------------------------------------------------\n");
                 printf("Descripcion: %s\n",d->descripcion);
                 printf("-----------------------------------------------------------------------\n");
-                //d = next(eje->dificultades);
+
             }
             cont++;
             eje = next(aux);
         }
         aux = nextMap(mapTipo);
     }
-   // printf("CONTADOR = %d",cont); 
+
 }
 
 //Muestra el Historial de rutinas realizadas por el usuario
@@ -313,7 +313,6 @@ void HistorialRutinas(Stack *s)
         tiempo = r->tiempo;
         if(tiempo<60) printf("La Rutina %s tiene un tiempo de %d segundos aproximadamente\n",r->nombre,r->tiempo);
         if(tiempo>59) printf("La Rutina %s tiene un tiempo de %d minutos aproximadamente\n",r->nombre,(r->tiempo)/60);
-        //strcpy(i,topStack(s)); 
         pushStack(s2,topStack(s));
         popStack(s);
         printf("------------------------------------------------------\n");
@@ -456,7 +455,7 @@ void borrarRutina(List *Rutinas){
     printf("--------------------------------------------------------------------\n");
     int id;
     printf("Ingrese la id de la rutina a eliminar: \n");
-    scanf("%d\n",&id);
+    scanf("%d",&id);
 
     Rutina* aux=first(Rutinas);
     while(aux){
@@ -473,6 +472,7 @@ void borrarRutina(List *Rutinas){
     return;
 }
 
+//Funcion para limpiar la cadena de caracteres al volver a declarar su contenido
 char* limpiarChar(char *palabra){
     for(int i=0;i<strlen(palabra);i++){
         palabra[i]=0;
@@ -480,9 +480,6 @@ char* limpiarChar(char *palabra){
     return palabra;
 }
 
-void modificarEjercicios(Rutina* aux){
-    
-}
 
 void modificarRutina(List* Rutinas){
     printf("--------------------------------------------------------------------\n");
@@ -494,11 +491,11 @@ void modificarRutina(List* Rutinas){
     while(aux){
         if(aux->id==id){
             int caso=1;
+            printf("Usted selecciono la rutina << %s >>\n",aux->nombre);
             while(caso!=0){
                 printf("--------------------------------------------------------------------\n");
                 printf("\n");
                 printf("1. Modificar nombre\n");
-                printf("2. Modificar los ejercicios\n");
                 printf("0. Volver al menu de rutinas\n");
                 printf("--------------------------------------------------------------------\n");
                 scanf("%d", &caso);
@@ -514,7 +511,6 @@ void modificarRutina(List* Rutinas){
                             printf("el nuevo nombre es <%s>\n",aux->nombre);
                             printf("--------------------------------------------------------------------\n");
                             break;
-                    case 2:modificarEjercicios(aux);break;
                 }
             }
             return;
@@ -532,11 +528,12 @@ void detalleRutina(Rutina *r)
     printf("Id: %d\n",r->id);
     printf("Nombre: %s\n",r->nombre);
     printf("Tiempo: %d min\n",(r->tiempo/60));
-    Ejercicio *eje = first(r->ejercicios);
+    Ejercicio *eje = front(r->ejercicios);
+    Ejercicio *aux = front(r->ejercicios);
     printf("-----------------------------------------------------------------------\n");
     printf("EJERCICIOS\n");
     printf("-----------------------------------------------------------------------\n");
-    while (eje)
+    do
     {
         printf("Nombre: %s\n",eje->nombre);
         printf("Tipo: %s\n",eje->tipo);
@@ -550,32 +547,10 @@ void detalleRutina(Rutina *r)
         printf("Cantidad de series a realizar: %d\n",d->series);
         printf("-----------------------------------------------------------------------\n");
         cont++;
-        eje = next(r->ejercicios);
-    }
-}
-
-void mostrarRutinas(List* Rutinas){
-    Rutina* aux = first(Rutinas);
-    while (aux){
-        detalleRutina(aux);
-        aux=next(Rutinas);
-    }
-    int caso=1;
-    printf("--------------------------------------------------------------------\n");
-    while(caso!=0){
-        printf("1. Modificar rutina\n");
-        printf("2. Eliminar rutina\n");
-        printf("0. Volver al menu principal\n");
-        printf("--------------------------------------------------------------------\n");
-        scanf("%d", &caso);
-
-        switch(caso){
-            case 1:modificarRutina(Rutinas);break;
-            case 2:borrarRutina(Rutinas);break;
-            
-        }
-    }
-    printf("--------------------------------------------------------------------\n");
+        pushCola(r->ejercicios,eje);
+        popCola(r->ejercicios);
+        eje = front(r->ejercicios);
+    }while(strcmp(eje->nombre,aux->nombre));
 }
 
 void realizarRutina(Stack *stackIMC, Stack *stackH, List *rutinas)
@@ -630,6 +605,32 @@ void realizarRutina(Stack *stackIMC, Stack *stackH, List *rutinas)
         printf("-----------------------------------------------------------------------\n");
     }
     
+}
+
+void mostrarRutinas(Stack *stackIMC, Stack *stackH, List* Rutinas){
+    Rutina* aux = first(Rutinas);
+    while (aux){
+        detalleRutina(aux);
+        aux=next(Rutinas);
+    }
+    int caso=1;
+    printf("--------------------------------------------------------------------\n");
+    while(caso!=0){
+        printf("1. Modificar rutina\n");
+        printf("2. Eliminar rutina\n");
+        printf("3. Realizar rutina\n");
+        printf("0. Volver al menu principal\n");
+        printf("--------------------------------------------------------------------\n");
+        scanf("%d", &caso);
+
+        switch(caso){
+            case 1:modificarRutina(Rutinas);break;
+            case 2:borrarRutina(Rutinas);break;
+            case 3:realizarRutina(stackIMC, stackH, Rutinas);break;
+            
+        }
+    }
+    printf("--------------------------------------------------------------------\n");
 }
 
 //Muestra el tiempo total invertido en la aplicacion y da posibilidad de mostrar el Historial de IMC
@@ -781,7 +782,8 @@ void caloriasQuemadas(Stack* Historial,int masaC){
     printf("Estas son las calorias quemadas durante todo tu uso de la app\n");
     long calorias=0;
     int tiem=0, IMC=0;
-    Rutina* r = first(Historial);
+    Rutina* r = topStack(Historial);
+    Stack* aux=createStack();
     if(!r){
         printf("Aun no has quemado calorias porque no has realizado ninguna rutina\n");
         printf("-----------------------------------------------------------------------\n");
@@ -789,10 +791,23 @@ void caloriasQuemadas(Stack* Historial,int masaC){
     }
     while(r){
         tiem+=r->tiempo;
-        r=next(Historial);
+        pushStack(aux,r);
+        popStack(Historial);
+        r=topStack(Historial);
     }
     IMC = round((tiem/60)*masaC*0.0175);
     printf("Has quemado %d calorias durante todas tus rutinas realizadas\n",IMC);
+
+    //Llenamos la pila inicial con las rutinas almacenadas en la auxiliar
+    r=topStack(aux);
+    while(r){
+        pushStack(Historial,r);
+        popStack(aux);
+        r=topStack(aux);
+    }
+
+    //Liberamos la memoria utilizada por la auxiliar
+    free(aux);
 }
 
 void reescribir(List* lista){
@@ -849,7 +864,7 @@ int main(){
         {
             case 1:crearRutina(Ejercicios,Rutinas,Tipos);break;
             case 2:realizarRutina(stackIMC, stackH, Rutinas);break;
-            case 3:mostrarRutinas(Rutinas);break;
+            case 3:mostrarRutinas(stackIMC, stackH,Rutinas);break;
             case 4:caloriasQuemadas(stackH,masaCorporal);break;
             case 5:break;
             case 6:menuComida(Comidas,Dieta,Alimentos);break;
