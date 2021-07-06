@@ -185,7 +185,7 @@ void Cargar(HashMap * mapEjercicios, HashMap * mapTipos){
     fclose(file);
 }
 
-void cargarComida(HashMap* mapComida){
+void cargarComida(HashMap* mapComida,List* a){
     FILE *archivo;
     archivo = fopen("Alimentos.csv", "r" );
     if(!archivo)return;
@@ -205,6 +205,7 @@ void cargarComida(HashMap* mapComida){
         Comida* Alimento;
         Alimento = createComida(name,kc,fats,carbs,prots);
         insertMap(mapComida,name,Alimento);
+        pushBack(a,Alimento);
     }
     fclose(archivo);
 }
@@ -673,7 +674,7 @@ void mostrarDieta(Stack* s){
     }
 }
 
-void crearcc(char nombre[50], HashMap* map, Stack* s){
+void crearcc(char nombre[50], HashMap* map, Stack* s, List* lista){
     Comida* Alimento;
     int kc, fats, carbs, prot;
     printf("Favor introducir las calorias del alimento\n");
@@ -686,10 +687,11 @@ void crearcc(char nombre[50], HashMap* map, Stack* s){
     scanf("%d",&prot);
     Alimento = createComida(nombre,kc,fats,carbs,prot);
     insertMap(map,nombre,Alimento);
+    pushBack(lista,Alimento);
     pushStack(s,Alimento);
 }
 
-void crearcc2(HashMap* map){
+void crearcc2(HashMap* map, List* lista){
     getchar();
     Comida* Alimento;
     Comida* Alimento2;
@@ -724,10 +726,11 @@ void crearcc2(HashMap* map){
     scanf("%ld",&prot);
     Alimento = createComida(nombre,kc,fats,carbs,prot);
     insertMap(map,nombre,Alimento);
+    pushBack(lista,Alimento);
 }
 
 
-void anadirComida(Stack* s, HashMap* map){
+void anadirComida(Stack* s, HashMap* map,List* lista){
     Comida* Alimento;
     int x;
     getchar();
@@ -742,7 +745,7 @@ void anadirComida(Stack* s, HashMap* map){
         printf(" 2. Salir\n");
         scanf("%d",&x);
         switch(x){
-            case 1:crearcc(nombre, map, s);break;
+            case 1:crearcc(nombre, map, s, lista);break;
             case 2:return;
         }
     }else{
@@ -750,7 +753,7 @@ void anadirComida(Stack* s, HashMap* map){
     }
 }
 
-void menuComida(HashMap* mapComida, Stack* Dieta){
+void menuComida(HashMap* mapComida, Stack* Dieta,List* lista){
     int caso=2;;
     //printf("Funcion en proceso de implementacion\n");
     printf("-----------------------------------------------------------------------\n");
@@ -764,10 +767,23 @@ void menuComida(HashMap* mapComida, Stack* Dieta){
         printf(" 0. Salir\n");
         scanf("%d",&caso);
         switch(caso){
-            case 1:anadirComida(Dieta, mapComida);break;
+            case 1:anadirComida(Dieta, mapComida, lista);break;
             case 2:mostrarDieta(Dieta);break;
-            case 3:crearcc2(mapComida);break;
+            case 3:crearcc2(mapComida, lista);break;
         }
+    }
+}
+void reescribir(List* lista){
+    FILE* file;
+    int i,t;
+    Comida* Alimento;
+    Alimento = first(lista);
+    file = fopen("Alimentos.csv", "w" );
+    fprintf(file,"%s;%s;%s;%s;%s\n","NOMBRE","CALORIAS","GRASAS","CARBOHIDRATOS","PROTEINAS");
+    t = get_size(lista);
+    for(i = 0 ; i<t ; i++){
+        fprintf(file,"%s;%ld;%ld;%ld;%ld\n",Alimento->nombre,Alimento->calorias,Alimento->grasas,Alimento->carbohidratos,Alimento->proteinas);
+        Alimento = next(lista);
     }
 }
 
@@ -801,10 +817,11 @@ int main(){
     Stack *Dieta = createStack();
     Stack *stackH = createStack();
     List* Rutinas=createList();
+    List* Alimentos=createList();
     
     int caso=2;
     Cargar(Ejercicios,Tipos);
-    cargarComida(Comidas);
+    cargarComida(Comidas,Alimentos);
     printf("-----------------------------------------------------------------------\n");
     printf("                            TRAININGSAPP                             \n");
     printf("-----------------------------------------------------------------------\n");
@@ -833,9 +850,10 @@ int main(){
             case 3:mostrarRutinas(Rutinas);break;
             case 4:caloriasQuemadas(stackH,masaCorporal);break;
             case 5:break;
-            case 6:menuComida(Comidas,Dieta);break;
+            case 6:menuComida(Comidas,Dieta,Alimentos);break;
             case 7:desempenoEntrenamiento(stackIMC, stackH);break;
         }
     }
+    reescribir(Alimentos);
     return 0;
 }
