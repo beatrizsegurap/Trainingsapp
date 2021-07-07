@@ -14,7 +14,7 @@ ingresar:
 ```
 gcc main.c hashmap.c list.c -o Trainingsapp 
 ```
-luego executar 
+luego ejecutar 
 ```
 .\Trainingsapp.exe
 ```
@@ -26,12 +26,12 @@ gdb --args .\Trainingsapp.exe
 run
 ```
 
-## INTEGRANTES - ASPECTOS POSITIVOS Y LO QUE DEBEMOS MEJORAR ✒️
+## INTEGRANTES - Aspectos positivos y lo que debemos mejorar ✒️
 
 ### **Jose Pailamilla** - [jnachoo](https://github.com/jnachoo)
-* Aspectos positivos: Trabaje con tiempo, comprendi bien como ocupar los tdas
-* Aspectos a Mejorar: No dar tantas vueltas
-* Puntos: 0
+* *Aspectos positivos:* Trabaje con tiempo, comprendi bien como ocupar los tdas
+* *Aspectos a Mejorar:* No dar tantas vueltas
+* *Puntos:* 0
 
 ### **Beatriz Segura** - [beatrizsegurap](https://github.com/beatrizsegurap)
 * *Aspectos positivos:* Realice varias funcionalidades comprendiendo bien los TDAs y corregi errores.
