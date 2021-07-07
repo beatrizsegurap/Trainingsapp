@@ -29,7 +29,7 @@ Aspectos a mejorar: Organizarme mejor para trabajar con mas tiempo y definir mej
 Puntos: 0
 
 Nicolas Zarate
-Aspectos positivos: Mejore mi uso de files, realize mi parte.
+Aspectos positivos: Mejore mi uso de files, realice mi parte.
 Aspectos a mejorar: Mejorar la comunicacion y trabajar mas a tiempo.
 Puntos: 0
 
