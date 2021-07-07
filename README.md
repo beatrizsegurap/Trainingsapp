@@ -28,3 +28,10 @@ Aspectos positivos: Realice varias funcionalidades comprendiendo bien los TDAs y
 Aspectos a mejorar: Organizarme mejor para trabajar con mas tiempo y definir mejor las tareas dentro del equipo.
 Puntos: 0
 
+Nicolas Zarate
+Aspectos positivos: Mejore mi uso de files, realize mi parte.
+Aspectos a mejorar: Mejorar la comunicacion y trabajar mas a tiempo.
+Puntos: 0
+
+Ignacio Cabrera
+Se retiro de la asignatura.
