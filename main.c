@@ -718,13 +718,17 @@ void mostrarDieta(Stack* s){
 void crearcc(char nombre[50], HashMap* map, Stack* s,List* lista){
     Comida* Alimento;
     int kc, fats, carbs, prot;
-    printf("Favor introducir las calorias del alimento\n");
+    printf("             Favor introducir las calorias del alimento\n");
+    printf("-----------------------------------------------------------------------\n");
     scanf("%d",&kc);
-    printf("Favor introduzca los miligramos de grasas del alimento\n");
+    printf("      Favor introduzca los miligramos de grasas del alimento\n");
+    printf("-----------------------------------------------------------------------\n");
     scanf("%d",&fats);
-    printf("Favor intrduzca los miligramos de carbohidratos del alimento\n");
+    printf("    Favor intrduzca los miligramos de carbohidratos del alimento\n");
+    printf("-----------------------------------------------------------------------\n");
     scanf("%d",&carbs);
-    printf("Favor introduzca los miligramos de proteinas del alimento\n");
+    printf("     Favor introduzca los miligramos de proteinas del alimento\n");
+    printf("-----------------------------------------------------------------------\n");
     scanf("%d",&prot);
     Alimento = createComida(nombre,kc,fats,carbs,prot);
     //Se inserta el alimento recien creado en el mapa,la lista y el stack.
@@ -750,25 +754,33 @@ void crearcc2(HashMap* map,List* lista){
         printf("El alimento ya existe, desea remplazarlo?\n 1. Si\n 2. No\n");
         scanf("%d",&i);
         if(i==1){
-            printf("Favor introducir las calorias del alimento\n");
+            printf("            Favor introducir las calorias del alimento\n");
+            printf("-----------------------------------------------------------------------\n");
             scanf("%ld",&Alimento2->calorias);
-            printf("Favor introduzca los miligramos de grasas del alimento\n");
+            printf("      Favor introduzca los miligramos de grasas del alimento\n");
+            printf("-----------------------------------------------------------------------\n");
             scanf("%ld",&Alimento2->grasas);
-            printf("Favor intrduzca los miligramos de carbohidratos del alimento\n");
+            printf("   Favor intrduzca los miligramos de carbohidratos del alimento\n");
+            printf("-----------------------------------------------------------------------\n");
             scanf("%ld",&Alimento2->carbohidratos);
-            printf("Favor introduzca los miligramos de proteinas del alimento\n");
+            printf("     Favor introduzca los miligramos de proteinas del alimento\n");
+            printf("-----------------------------------------------------------------------\n");
             scanf("%ld",&Alimento2->proteinas);
             return;
         }else return;
     }
     //Pide las variables para el alimento.
-    printf("Favor introducir las calorias del alimento\n");
+    printf("           Favor introducir las calorias del alimento\n");
+    printf("-----------------------------------------------------------------------\n");
     scanf("%ld",&kc);
-    printf("Favor introduzca los miligramos de grasas del alimento\n");
+    printf("      Favor introduzca los miligramos de grasas del alimento\n");
+    printf("-----------------------------------------------------------------------\n");
     scanf("%ld",&fats);
-    printf("Favor intrduzca los miligramos de carbohidratos del alimento\n");
+    printf("    Favor intrduzca los miligramos de carbohidratos del alimento\n");
+    printf("-----------------------------------------------------------------------\n");
     scanf("%ld",&carbs);
-    printf("Favor introduzca los miligramos de proteinas del alimento\n");
+    printf("     Favor introduzca los miligramos de proteinas del alimento\n");
+    printf("-----------------------------------------------------------------------\n");
     scanf("%ld",&prot);
     //Se crea el alimento, al igual que se inserta tanto en el mapa como en la lista, para que al cerrarse el programa se guarde en el archivo y no se pierda.
     Alimento = createComida(nombre,kc,fats,carbs,prot);
@@ -784,7 +796,9 @@ void anadirComida(Stack* s, HashMap* map,List* lista){
     //Existia un problema con la lectura despues del switch de menuComida, la cual se arreglo con el getchar.
     getchar();
     char nombre[50];
+    printf("-----------------------------------------------------------------------\n");
     printf("Favor ingrese el nombre del alimento que desea anadir a su dieta de hoy\n");
+    printf("-----------------------------------------------------------------------\n");
     scanf("%[^\n]",nombre);
     //Se revisa si el nombre existe, en caso de no existir se le da la opcion al usuario de crearlo.
     Alimento = searchMap(map, nombre);
@@ -809,7 +823,8 @@ void menuComida(HashMap* mapComida, Stack* Dieta,List* lista){
     printf("                            Menu de Comida\n");
     printf("-----------------------------------------------------------------------\n");
     while(caso!=0){
-        printf("Favor ingrese la accion que quiere ejercer\n");
+        printf("          Favor ingrese la accion que quiere ejercer\n");
+        printf("-----------------------------------------------------------------------\n");
         printf(" 1. Anadir Comida\n");
         printf(" 2. Ver dieta de hoy\n");
         printf(" 3. Crear alimento\n");
