@@ -215,7 +215,7 @@ void cargarComida(HashMap* mapComida,List* Alimentos){
     fclose(archivo);
 }
 
-//Calcula el IMC del usuario
+//Calcula el IMC del usuario, pidiendo su altura y su masa corporal
 float CalcularIMC(Stack *HistorialI){
 
     float p;
@@ -232,7 +232,7 @@ float CalcularIMC(Stack *HistorialI){
     *IMC = p/(h*h);
     printf("------------------------------------------------------\n");
     printf("         Su IMC actual es: %f\n",*IMC);
-    //printf("------------------------------------------------------\n");
+    //Se insertan los IMC's calculados en la pila
     pushStack(HistorialI,IMC);
     return p;
 }
@@ -246,7 +246,7 @@ void HistorialIMC(Stack *HistorialI)
     printf("------------------------------------------------------\n");
     float i;
     Stack *s2 = createStack();
-    
+    //Se imprimen los IMC,s guardados y ademas se apilan en una pila con el fin de no perder los datos
     while (get_size(HistorialI)!=0)
     {
         i= *((float*)topStack(HistorialI)); 
@@ -254,7 +254,7 @@ void HistorialIMC(Stack *HistorialI)
         popStack(HistorialI);
         printf("IMC : %f\n",i);
     }
-
+    //Se vuelven a copiar los valores de los IMC,s en la pila original
     while (get_size(s2)!=0)
     {
         pushStack(HistorialI,topStack(s2));
@@ -281,7 +281,7 @@ void mostrarEjercicios(HashMap *mapTipo)
         {
             printf("Nombre: %s\n",eje->nombre);
             Dificultad *d = first(eje->dificultades);
-
+            
             if(d)
             {
                 printf("Nivel: ");
@@ -314,7 +314,7 @@ void HistorialRutinas(Stack *s)
     printf("------------------------------------------------------\n");
     char i[50];
     Stack *s2 = createStack();
-    //Recorremos la pila con el historial de rutinas utilizando una pila auxiliar
+    //Recorremos la pila con el historial de rutinas utilizando una pila y ademas se apilan los datos en una pila auxiliar
     while (get_size(s)!=0)
     {
         Rutina *r = topStack(s);
@@ -325,7 +325,7 @@ void HistorialRutinas(Stack *s)
         popStack(s);
         printf("------------------------------------------------------\n");
     }
-    
+    //Se apilan los datos copiados en la pila auxiliar en la pila original
     while (get_size(s2)!=0)
     {
         pushStack(s,topStack(s2));
@@ -545,8 +545,8 @@ void detalleRutina(Rutina *r)
     printf("Tiempo: %d min\n",(r->tiempo/60));
     Ejercicio *eje = front(r->ejercicios);
     Ejercicio *aux = front(r->ejercicios);
-    //No se utiliza una estructura auxiliar sino que la misma cola para realizar las operaciones de mostrar ejercicios esto se debe a las caracteristicas
-    //que provee este tda
+    //No se utiliza una estructura auxiliar sino que la misma cola para realizar las operaciones de mostrar ejercicios esto se debe a las 
+    //caracteristicas que provee este tda
     printf("-----------------------------------------------------------------------\n");
     printf("EJERCICIOS\n");
     printf("-----------------------------------------------------------------------\n");
