@@ -184,7 +184,7 @@ void Cargar(HashMap * mapEjercicios, HashMap * mapTipos){
     }
     fclose(file);
 }
-
+//Funcion que carga la comida de un archivo, las guarda en un mapa para su uso en funciones y en una lista para permitir que se actualize dicho archivo cuando se finalize el uso de la app.
 void cargarComida(HashMap* mapComida,List* Alimentos){
     FILE *archivo;
     archivo = fopen("Alimentos.csv", "r" );
@@ -192,7 +192,9 @@ void cargarComida(HashMap* mapComida,List* Alimentos){
     char *name, *aux;
     int kc, fats, carbs, prots, i;
     char linea[100];
+    //Recibe la primera linea con informacion no pertinente.
     fgets(linea,99,archivo);
+    //Pasa por cada linea y por cada seccion separada por ; para leer cada variable del struct comida.
     while(fgets(linea, 99, archivo) != NULL){
         for(i=0;i<5;i++){
             aux = get_csv_field(linea,i);
@@ -202,11 +204,14 @@ void cargarComida(HashMap* mapComida,List* Alimentos){
             if(i==3)carbs=atol(aux);
             if(i==4)prots=atol(aux);
         }
+        //se crea el struct comida con las variables previamente leidas y se guarda en el mapa para su busqueda por el usuario y en una lista, la cual permite reescribir el archivo con
+        //nueva informacion añadida o editada por el usuario.
         Comida* Alimento;
         Alimento = createComida(name,kc,fats,carbs,prots);
         insertMap(mapComida,name,Alimento);
         pushBack(Alimentos,Alimento);
     }
+    //Se cierra el archivo
     fclose(archivo);
 }
 
@@ -679,27 +684,37 @@ void desempenoEntrenamiento (Stack *s, Stack *s2)
     }
 }
 
+//Esta funcion ocupa los stacks para mostrar en orden los alimentos añadidos a la dieta del dia
+//Ademas de mostrar un resumen de las calorias totales y un detalle de grasas, carbs y proteinas.
 void mostrarDieta(Stack* s){
+    //Segundo stack usado para invertir el original y poder imprimirlo en orden.
     Stack* s2=createStack();
     Comida* a;
+    long i=0;
     if(get_size(s)==0){
         printf("No ha agregado nada a su dieta de hoy.\n");
         return;
     }
+    //Se imprime al voltear denuevo el stack para que se imprima en el orden en el cual fueron añadidos.
     while(get_size(s)!=0){
         pushStack(s2,topStack(s));
         popStack(s);  
     }
     printf("Su dieta de hoy a sido: \n");
+    //Pasa por toda el stack invertido mostrando los alimentos ingeridos.
     while(get_size(s2)!=0){
         a=topStack(s2);
         printf("%s: ",a->nombre);
         printf("%ldkc G=%ldmg C=%ldmg P=%ldmg\n",a->calorias,a->grasas,a->carbohidratos,a->proteinas);
+        i+=a->calorias;
         pushStack(s,topStack(s2));
         popStack(s2);
     }
+    //Se da el total de calorias en forma de resumen.
+    printf("Para un total de %ld calorias.\n",i);
 }
-
+//Es la abreviacion de crear comida custom, pregunta al usuario la informacion de un alimento a crear y lo añade,
+//tanto a la dieta del dia, la lista de alimentos y el mapa de alimentos.
 void crearcc(char nombre[50], HashMap* map, Stack* s,List* lista){
     Comida* Alimento;
     int kc, fats, carbs, prot;
@@ -712,12 +727,15 @@ void crearcc(char nombre[50], HashMap* map, Stack* s,List* lista){
     printf("Favor introduzca los miligramos de proteinas del alimento\n");
     scanf("%d",&prot);
     Alimento = createComida(nombre,kc,fats,carbs,prot);
+    //Se inserta el alimento recien creado en el mapa,la lista y el stack.
     insertMap(map,nombre,Alimento);
     pushStack(s,Alimento);
     pushBack(lista,Alimento);
 }
-
+//Una variante de crear comida custom, el cual es ocupado en otra funcion, de igual manera busca si el nombre que se le quiere dar a la comida existe o no.
+//En caso de existir permite editar el alimento en cuestion.Mientras que si no existe, lo crea.
 void crearcc2(HashMap* map,List* lista){
+    //Se previene un error de lectura que se encontro en otras funciones que seguian despues del switch con la lectura.
     getchar();
     Comida* Alimento;
     Comida* Alimento2;
@@ -726,6 +744,7 @@ void crearcc2(HashMap* map,List* lista){
     int i=0;
     printf("Favor ingrese el nombre del alimento que quiere crear\n");
     scanf("%[^\n]",nombre);
+    //Se revisa si el nombre del alimento que se quiere crear existe, en caso de existir se da la opcion de remplazar sus valores.
     Alimento2=searchMap(map,nombre);
     if(Alimento2){
         printf("El alimento ya existe, desea remplazarlo?\n 1. Si\n 2. No\n");
@@ -742,6 +761,7 @@ void crearcc2(HashMap* map,List* lista){
             return;
         }else return;
     }
+    //Pide las variables para el alimento.
     printf("Favor introducir las calorias del alimento\n");
     scanf("%ld",&kc);
     printf("Favor introduzca los miligramos de grasas del alimento\n");
@@ -750,38 +770,41 @@ void crearcc2(HashMap* map,List* lista){
     scanf("%ld",&carbs);
     printf("Favor introduzca los miligramos de proteinas del alimento\n");
     scanf("%ld",&prot);
+    //Se crea el alimento, al igual que se inserta tanto en el mapa como en la lista, para que al cerrarse el programa se guarde en el archivo y no se pierda.
     Alimento = createComida(nombre,kc,fats,carbs,prot);
     insertMap(map,nombre,Alimento);
     pushBack(lista,Alimento);
 }
 
-
+//Esta funcion permite al usuario añadir comida a su dieta diaria, en caso de que se ingrese un nombre no encontrado, se le pregunta si desea crearlo.
+//En caso de existir se añade al stack dieta y vuelve al menu comida.
 void anadirComida(Stack* s, HashMap* map,List* lista){
     Comida* Alimento;
     int x;
+    //Existia un problema con la lectura despues del switch de menuComida, la cual se arreglo con el getchar.
     getchar();
     char nombre[50];
     printf("Favor ingrese el nombre del alimento que desea anadir a su dieta de hoy\n");
     scanf("%[^\n]",nombre);
-    //fgets(nombre, 50, stdin);
+    //Se revisa si el nombre existe, en caso de no existir se le da la opcion al usuario de crearlo.
     Alimento = searchMap(map, nombre);
     if(!Alimento){
         printf("El alimento que busco no existe.\n ¿Desea crearlo?\n");
         printf(" 1. Continuar\n");
-        printf(" 2. Salir\n");
+        printf(" 0. Salir\n");
         scanf("%d",&x);
         switch(x){
             case 1:crearcc(nombre, map, s,lista);break;
-            case 2:return;
+            case 0:return;
         }
     }else{
+        //En caso de existir simplemente se agrega al Stack.
         pushStack(s, Alimento);
     }
 }
-
+//Es el menu el cual lleva a todas las opciones que tengan relacion con alimentos y/o comida.
 void menuComida(HashMap* mapComida, Stack* Dieta,List* lista){
     int caso=2;;
-    //printf("Funcion en proceso de implementacion\n");
     printf("-----------------------------------------------------------------------\n");
     printf("                            Menu de Comida\n");
     printf("-----------------------------------------------------------------------\n");
@@ -835,7 +858,8 @@ void caloriasQuemadas(Stack* Historial,int masaC){
     //Liberamos la memoria utilizada por la auxiliar
     free(aux);
 }
-
+//Esta funcion ocupa la lista en la cual se guardan los alimentos que se leyeron en el archivo, como los editados e ingresados por el usuario.
+//Reescribiendolos en el mismo documento.
 void reescribir(List* lista){
     FILE* file;
     int i,t;
@@ -844,6 +868,7 @@ void reescribir(List* lista){
     file = fopen("Alimentos.csv", "w" );
     fprintf(file,"%s;%s;%s;%s;%s\n","NOMBRE","CALORIAS","GRASAS","CARBOHIDRATOS","PROTEINAS");
     t = get_size(lista);
+    //Se pasa por toda la lista de alimentos escribiendo en el archivo.
     for(i = 0 ; i<t ; i++){
         fprintf(file,"%s;%ld;%ld;%ld;%ld\n",Alimento->nombre,Alimento->calorias,Alimento->grasas,Alimento->carbohidratos,Alimento->proteinas);
         Alimento = next(lista);
