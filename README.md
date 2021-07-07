@@ -38,7 +38,7 @@ run
 * *Aspectos a mejorar:* Organizarme mejor para trabajar con mas tiempo y definir mejor las tareas dentro del equipo.
 * *Puntos:* 0
 
-### **Nicolas Zarate** - [Leftzara](https://github.com/Leftzarad)
+### **Nicolas Zarate** - [Leftzara](https://github.com/Leftzara)
 * *Aspectos positivos:* Mejore mi uso de files, realice mi parte.
 * *Aspectos a mejorar:* Mejorar la comunicacion y trabajar mas a tiempo.
 * *Puntos:* 0
